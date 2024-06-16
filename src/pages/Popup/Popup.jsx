@@ -1,13 +1,14 @@
-import React from 'react';
-import logo from '../../assets/img/logo.svg';
-import Greetings from '../../containers/Greetings/Greetings';
-import './Popup.css';
+import React from "react";
+import logo from "../../assets/img/logo.svg";
+import { App, AppHeader, AppLogo } from "./styles";
+// import Greetings from '../../containers/Greetings/Greetings';
+// import './Popup.css';
 
 const Popup = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <App>
+      <AppHeader>
+        <AppLogo src={logo} alt="logo" />
         <p>
           Edit <code>src/pages/Popup/Popup.jsx</code> and save to reload.
         </p>
@@ -19,8 +20,8 @@ const Popup = () => {
         >
           Learn React!
         </a>
-      </header>
-    </div>
+      </AppHeader>
+    </App>
   );
 };
 

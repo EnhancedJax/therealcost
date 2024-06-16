@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension with React & Webpack",
-  "description": "A chrome extension boilerplate built with React 17, Webpack 5, and Webpack Dev Server 4",
+  "name": "How much hours does this cost?",
+  "description": "A chrome extension which shows you what the real cost is.",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
@@ -11,6 +11,7 @@
   "icons": {
     "128": "icon-128.png"
   },
+  "permissions": ["storage", "activeTab", "scripting"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
