@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Bar from "../Bar";
 import { Container, Row } from "./styles";
 
 const Tooltip = ({ data, settings }) => {
@@ -9,6 +10,8 @@ const Tooltip = ({ data, settings }) => {
   const ref = useRef(null);
 
   const value = `${currency}${amount}`;
+  const days = (calculated / settings.hoursPerDay).toFixed(0);
+  const percentDay = ((calculated / settings.hoursPerDay) * 100).toFixed(0);
 
   useEffect(() => {
     if (dimensions) {
@@ -29,19 +32,16 @@ const Tooltip = ({ data, settings }) => {
       <Row>
         {value} = {calculated} hours
       </Row>
-      <Row>
-        You work {settings.hoursPerDay} hours a day. So this costs{" "}
-        {((calculated / settings.hoursPerDay) * 100).toFixed(0)}% of your time
-        in a day of work.
-      </Row>
-      <Row>
-        You work {settings.daysPerWeek} days a week. So this costs{" "}
-        {(
-          (calculated / settings.hoursPerDay / settings.daysPerWeek) *
-          100
-        ).toFixed(0)}
-        % of your time in a week of work.
-      </Row>
+      {settings.hoursPerDay > calculated ? (
+        <Row>
+          Or {percentDay}% of your {settings.hoursPerDay} hour day.
+        </Row>
+      ) : (
+        <Row>
+          Or {days} days of your {settings.daysPerWeek} day work week.
+        </Row>
+      )}
+      <Bar percent={percentDay} total={settings.hoursPerDay} />
     </Container>
   );
 };

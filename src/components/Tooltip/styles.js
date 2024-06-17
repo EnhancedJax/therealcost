@@ -20,8 +20,7 @@ const fadeOut = keyframes`
 
 export const Container = styled.div`
   padding: 10px;
-  width: 150px;
-  height: 300px;
+  width: min-content;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);

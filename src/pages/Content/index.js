@@ -18,6 +18,17 @@ let settings = {};
 
 /* -------- Section Functions ------- */
 
+function calculate(numStr) {
+  let calculated = (
+    parseFloat(
+      numStr.replace(/,/g, numStr.length - 3 !== numStr.indexOf(",") ? "" : ",")
+    ) / settings.hourlyWage
+  ).toFixed(2);
+  const string =
+    (calculated < 10 ? calculated : calculated.split(".")[0]) + " hours";
+  return [calculated, string];
+}
+
 // Function to detect and highlight money amounts
 function highlightMoneyAmounts() {
   console.log("%c Highlighting money amounts...", "color: blue");
@@ -39,13 +50,11 @@ function highlightMoneyAmounts() {
       // console.log(node, node.parentNode);
       const parent = node.parentNode;
       const span = document.createElement("span");
-      const calculated = (
-        parseFloat(matches[2].replace(",", "")) / settings.hourlyWage
-      ).toFixed(2);
+      const [calculated, string] = calculate(matches[2]);
 
       span.className = "highlighted-money";
       if (settings.replace) {
-        span.textContent = calculated + " hrs";
+        span.textContent = string;
       } else {
         span.textContent = matches[0];
       }
