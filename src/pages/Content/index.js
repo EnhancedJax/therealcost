@@ -39,13 +39,13 @@ function highlightMoneyAmounts() {
       // console.log(node, node.parentNode);
       const parent = node.parentNode;
       const span = document.createElement("span");
+      const calculated = (
+        parseFloat(matches[2].replace(",", "")) / settings.hourlyWage
+      ).toFixed(2);
 
       span.className = "highlighted-money";
       if (settings.replace) {
-        span.textContent =
-          (
-            parseFloat(matches[2].replace(",", "")) / settings.hourlyWage
-          ).toFixed(2) + " hrs";
+        span.textContent = calculated + " hrs";
       } else {
         span.textContent = matches[0];
       }
@@ -55,6 +55,7 @@ function highlightMoneyAmounts() {
       // give tooltip component access to the data
       span.dataset.currency = matches[1];
       span.dataset.amount = matches[2];
+      span.dataset.calculated = calculated;
 
       const parts = node.nodeValue.split(matches[0]);
       if (matches[0].startsWith(" ")) {
@@ -87,11 +88,14 @@ function injectTooltipComponent() {
       tooltipData = {
         amount: e.target.dataset.amount,
         currency: e.target.dataset.currency,
+        calculated: e.target.dataset.calculated,
         dimensions: {
-          x: targetRect.left + window.pageXOffset,
-          y: targetRect.top + window.pageYOffset,
+          x: targetRect.left,
+          y: targetRect.top,
           w: targetRect.width,
           h: targetRect.height,
+          sX: window.scrollX,
+          sY: window.scrollY,
         },
       };
       renderTooltip();
