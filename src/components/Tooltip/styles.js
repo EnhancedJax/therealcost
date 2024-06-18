@@ -1,39 +1,38 @@
-import styled, { keyframes } from "styled-components";
-
-const fadeIn = keyframes`
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-`;
-
-const fadeOut = keyframes`
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
-`;
+import styled from "styled-components";
 
 export const Container = styled.div`
-  padding: 10px;
-  width: min-content;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  display: block;
-  z-index: 9999;
-  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   position: absolute;
-  left: ${(props) => `${props.pos.left}px`};
-  top: ${(props) => `${props.pos.top}px`};
-  /* animation: ${fadeIn} 0.5s ease-in; */
+  left: ${(props) => `${props.d.x + props.d.sX}px`};
+  top: ${(props) => `${props.d.y + props.d.sY}px`};
 `;
 
-export const Row = styled.div`
-  text-align: center;
-  margin: 10px;
+export const ContentContainer = styled.div`
+  padding: 5px;
+  display: flex;
+  align-items: stretch;
+`;
+
+export const PsuedoBox = styled.div`
+  width: ${(props) => `${props.d.w}px`};
+  height: ${(props) => `${props.d.h}px`};
+`;
+
+export const Header = styled.p`
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  min-width: 250px;
+`;
+
+export const ContextHeader = styled.p`
+  font-size: 12px;
+  font-weight: 300;
+  color: gray;
+  margin: 10px 0 0 0;
 `;

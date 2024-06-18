@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Tooltip from "../../components/Tooltip";
+import callbacks from "./callbacks.js";
 
 console.log("Content script works!");
 
@@ -42,7 +43,11 @@ function highlightMoneyAmounts() {
   // eslint-disable-next-line no-cond-assign
   while ((node = walker.nextNode())) {
     // Skip nodes within the reactRoot div
-    if (node.parentNode.closest("#reactRoot") || node.tagName === "script") {
+    if (
+      node.parentNode.closest("#reactRoot") ||
+      node.parentNode.closest(".ant-popover") ||
+      node.tagName === "script"
+    ) {
       continue;
     }
     const matches = node.nodeValue.match(moneyRegex);
@@ -88,7 +93,9 @@ function injectTooltipComponent() {
   const reactRoot = createRoot(reactRootEl);
 
   const renderTooltip = () => {
-    reactRoot.render(<Tooltip data={tooltipData} settings={settings} />);
+    reactRoot.render(
+      <Tooltip data={tooltipData} settings={settings} callbacks={callbacks} />
+    );
   };
 
   document.body.addEventListener("mouseover", (e) => {
@@ -111,12 +118,12 @@ function injectTooltipComponent() {
     }
   });
 
-  document.body.addEventListener("mouseout", (e) => {
-    if (e.target.classList.contains("highlighted-money")) {
-      tooltipData.dimensions = null;
-      renderTooltip();
-    }
-  });
+  // document.body.addEventListener("mouseout", (e) => {
+  //   if (e.target.classList.contains("highlighted-money")) {
+  //     tooltipData.dimensions = null;
+  //     renderTooltip();
+  //   }
+  // });
 
   console.log("Tooltip component injected!");
 }
@@ -129,6 +136,7 @@ function observeDocument() {
     let shouldHighlight = false;
     for (const mutation of mutations) {
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+        console.log(mutation.addedNodes);
         for (const node of mutation.addedNodes) {
           if (
             node.nodeType === Node.ELEMENT_NODE &&
@@ -160,23 +168,6 @@ function observeDocument() {
 }
 
 /* ------- Read write helpers ------- */
-
-async function writeOption(key, value) {
-  try {
-    await new Promise((resolve, reject) => {
-      chrome.storage.sync.set({ [key]: value }, () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
-      });
-    });
-    console.log(`Option ${key} set to ${value}`);
-  } catch (error) {
-    console.error(`Error setting option ${key}:`, error);
-  }
-}
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
