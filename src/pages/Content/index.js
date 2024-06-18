@@ -1,9 +1,10 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover";
+import i18n from "../../utils/i18n";
 import { restoreOptions } from "../../utils/storage";
-
 console.log("Content script works!");
+console.log(i18n);
 
 /* ------- Section definitions ------ */
 
@@ -26,7 +27,9 @@ function calculate(numStr) {
     ) / settings.hourlyWage
   ).toFixed(2);
   const string =
-    (calculated < 10 ? calculated : calculated.split(".")[0]) + " hours";
+    (calculated < 10 ? calculated : calculated.split(".")[0]) +
+    " " +
+    i18n.t("hours");
   return [calculated, string];
 }
 

@@ -5,6 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Flex, Popover, Tooltip } from "antd";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import SmartInfo from "../SmartInfo";
 import {
   Container,
@@ -15,6 +16,7 @@ import {
 } from "./styles";
 
 const Hover = ({ data, settings }) => {
+  const { t } = useTranslation();
   const { amount, currency, dimensions, calculated: hours } = data;
   const { hoursPerDay, daysPerWeek } = settings;
   const [open, setOpen] = useState(true);
@@ -57,8 +59,10 @@ const Hover = ({ data, settings }) => {
   const content = (
     <ContentContainer>
       <div>
-        <ContextHeader>The real cost of {originalStr}:</ContextHeader>
-        <Header>{hours} hours</Header>
+        <ContextHeader>{t("theRealCostOf", { 1: originalStr })}:</ContextHeader>
+        <Header>
+          {hours} {t("Hours")}
+        </Header>
         <SmartInfo values={values} />
       </div>
       <Divider type="vertical" style={{ height: "auto" }} />
