@@ -4,6 +4,7 @@ export const defaultSettings = {
   daysPerWeek: 5,
   currency: "HKD",
   replace: true,
+  blacklist: [],
 };
 
 export const moneyRegex =

@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import Tooltip from "../../components/Tooltip";
-import callbacks from "./callbacks.js";
+import Hover from "../../components/Hover";
 
 console.log("Content script works!");
 
@@ -9,7 +8,7 @@ console.log("Content script works!");
 
 import { defaultSettings, moneyRegex, spanStyle } from "./constants.js";
 
-let tooltipData = {
+let HoverData = {
   amount: 0,
   currency: "$",
   position: null,
@@ -59,7 +58,7 @@ function highlightMoneyAmounts() {
 
       Object.assign(span.style, spanStyle);
 
-      // give tooltip component access to the data
+      // give Hover component access to the data
       span.dataset.currency = matches[1];
       span.dataset.amount = matches[2];
       span.dataset.calculated = calculated;
@@ -77,24 +76,22 @@ function highlightMoneyAmounts() {
   console.log("%c Money amounts highlighted!", "color: gold");
 }
 
-// Inject tooltip component
-function injectTooltipComponent() {
-  console.log("%c Injecting tooltip component...", "color: blue");
+// Inject Hover component
+function injectHoverComponent() {
+  console.log("%c Injecting Hover component...", "color: blue");
   const reactRootEl = document.createElement("div");
   reactRootEl.setAttribute("id", "therealcost-reactRoot");
   document.documentElement.appendChild(reactRootEl);
   const reactRoot = createRoot(reactRootEl);
 
-  const renderTooltip = () => {
-    reactRoot.render(
-      <Tooltip data={tooltipData} settings={settings} callbacks={callbacks} />
-    );
+  const renderHover = () => {
+    reactRoot.render(<Hover data={HoverData} settings={settings} />);
   };
 
   document.body.addEventListener("mouseover", (e) => {
     if (e.target.classList.contains("highlighted-money")) {
       let targetRect = e.target.getBoundingClientRect();
-      tooltipData = {
+      HoverData = {
         amount: e.target.dataset.amount,
         currency: e.target.dataset.currency,
         calculated: e.target.dataset.calculated,
@@ -107,18 +104,18 @@ function injectTooltipComponent() {
           sY: window.scrollY,
         },
       };
-      renderTooltip();
+      renderHover();
     }
   });
 
   // document.body.addEventListener("mouseout", (e) => {
   //   if (e.target.classList.contains("highlighted-money")) {
-  //     tooltipData.dimensions = null;
-  //     renderTooltip();
+  //     HoverData.dimensions = null;
+  //     renderHover();
   //   }
   // });
 
-  console.log("Tooltip component injected!");
+  console.log("Hover component injected!");
 }
 
 // Observe the document for changes to re-highlight money amounts
@@ -144,7 +141,7 @@ function observeDocument() {
       //     if (
       //       node.nodeType === Node.ELEMENT_NODE &&
       //       node.tagName.toLowerCase() !== "script" &&
-      //       node.id !== "currency-tooltip"
+      //       node.id !== "currency-Hover"
       //     ) {
       //       shouldHighlight = true;
       //       break;
@@ -194,13 +191,23 @@ const restoreOptions = async () => {
 
 /* -------- Section Initialization ------- */
 
-function init() {
-  console.log("Content script initialized!");
-  restoreOptions().then(() => {
-    injectTooltipComponent();
-    highlightMoneyAmounts();
-    observeDocument();
-  });
-}
+chrome.runtime.sendMessage("giveMeCurrentTabPlease");
 
-init();
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.tab) {
+    const url = message.tab.url;
+
+    restoreOptions().then(() => {
+      settings.blacklist = settings.blacklist.filter(
+        (entry) => entry !== null && entry !== undefined
+      );
+      if (settings.blacklist.includes(url)) {
+        console.log("Blacklisted site:", url);
+        return;
+      }
+      injectHoverComponent();
+      highlightMoneyAmounts();
+      observeDocument();
+    });
+  }
+});

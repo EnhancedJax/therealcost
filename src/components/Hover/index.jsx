@@ -3,7 +3,7 @@ import {
   EyeInvisibleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Flex, Popover } from "antd";
+import { Button, Divider, Flex, Popover, Tooltip } from "antd";
 import React, { useState } from "react";
 import SmartInfo from "../SmartInfo";
 import {
@@ -14,7 +14,7 @@ import {
   PsuedoBox,
 } from "./styles";
 
-const Tooltip = ({ data, settings, callbacks }) => {
+const Hover = ({ data, settings }) => {
   const { amount, currency, dimensions, calculated: hours } = data;
   const { hoursPerDay, daysPerWeek } = settings;
   const [open, setOpen] = useState(true);
@@ -65,19 +65,21 @@ const Tooltip = ({ data, settings, callbacks }) => {
       <Flex vertical gap="small" justify="center">
         <Button
           onClick={() => {
-            callbacks.log("Hello");
+            chrome.runtime.sendMessage("changeCurrency");
           }}
           icon={<DollarOutlined />}
         />
+        <Tooltip title="Do not show on this website">
+          <Button
+            onClick={() => {
+              chrome.runtime.sendMessage("addToBlacklist");
+            }}
+            icon={<EyeInvisibleOutlined />}
+          />
+        </Tooltip>
         <Button
           onClick={() => {
-            callbacks.log("Hello");
-          }}
-          icon={<EyeInvisibleOutlined />}
-        />
-        <Button
-          onClick={() => {
-            callbacks.log("Hello");
+            chrome.runtime.sendMessage("openOptions");
           }}
           icon={<SettingOutlined />}
         />
@@ -85,7 +87,7 @@ const Tooltip = ({ data, settings, callbacks }) => {
     </ContentContainer>
   );
   return (
-    <Container id="currency-tooltip" d={dimensions}>
+    <Container id="currency-Hover" d={dimensions}>
       <Popover content={content} id="test">
         <PsuedoBox d={dimensions} id="psuedo-box" />
       </Popover>
@@ -93,4 +95,4 @@ const Tooltip = ({ data, settings, callbacks }) => {
   );
 };
 
-export default Tooltip;
+export default Hover;
