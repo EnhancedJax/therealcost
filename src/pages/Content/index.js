@@ -1,12 +1,13 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover";
+import { restoreOptions } from "../../utils/storage";
 
 console.log("Content script works!");
 
 /* ------- Section definitions ------ */
 
-import { defaultSettings, moneyRegex, spanStyle } from "./constants.js";
+import { moneyRegex, spanStyle } from "./constants.js";
 
 let HoverData = {
   amount: 0,
@@ -167,28 +168,6 @@ function observeDocument() {
   });
 }
 
-/* ------- Read write helpers ------- */
-
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-const restoreOptions = async () => {
-  try {
-    const items = await new Promise((resolve, reject) => {
-      chrome.storage.sync.get(defaultSettings, (items) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(items);
-        }
-      });
-    });
-    console.log("Options restored!", items);
-    Object.assign(settings, items);
-  } catch (error) {
-    console.error("Error restoring options:", error);
-  }
-};
-
 /* -------- Section Initialization ------- */
 
 chrome.runtime.sendMessage("giveMeCurrentTabPlease");
@@ -197,7 +176,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.tab) {
     const url = message.tab.url;
 
-    restoreOptions().then(() => {
+    restoreOptions().then((items) => {
+      Object.assign(settings, items);
       settings.blacklist = settings.blacklist.filter(
         (entry) => entry !== null && entry !== undefined
       );
