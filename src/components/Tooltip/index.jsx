@@ -86,8 +86,8 @@ const Tooltip = ({ data, settings, callbacks }) => {
   );
   return (
     <Container id="currency-tooltip" d={dimensions}>
-      <Popover content={content}>
-        <PsuedoBox d={dimensions} />
+      <Popover content={content} id="test">
+        <PsuedoBox d={dimensions} id="psuedo-box" />
       </Popover>
     </Container>
   );

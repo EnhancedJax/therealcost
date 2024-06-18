@@ -6,7 +6,9 @@ function generateCalendar(days, daysPerWeek) {
   const totalDays = 30;
   const skipDays = 6; // Starts on a Saturday
   const calendarSize = 42; // 7x6 grid
-  let calendar = new Array(calendarSize).fill(<TBox />);
+  let calendar = new Array(calendarSize)
+    .fill(null)
+    .map((_, index) => <TBox key={index} />);
 
   // Define the positions of holidays in the 30-day calendar
   const holidays = {
@@ -23,12 +25,12 @@ function generateCalendar(days, daysPerWeek) {
       continue;
     }
     if (holidays[daysPerWeek].includes(i + 1 - skipDays)) {
-      calendar[i] = <HBox index={i} />;
+      calendar[i] = <HBox key={i} />;
     } else if (filledDays < days) {
-      calendar[i] = <FBox index={i} />;
+      calendar[i] = <FBox key={i} />;
       filledDays++;
     } else {
-      calendar[i] = <Box index={i} />;
+      calendar[i] = <Box key={i} />;
     }
   }
 

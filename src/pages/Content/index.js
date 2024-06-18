@@ -40,19 +40,12 @@ function highlightMoneyAmounts() {
     false
   );
   let node;
-  // eslint-disable-next-line no-cond-assign
   while ((node = walker.nextNode())) {
-    // Skip nodes within the reactRoot div
-    if (
-      node.parentNode.closest("#reactRoot") ||
-      node.parentNode.closest(".ant-popover") ||
-      node.tagName === "script"
-    ) {
+    if (node.parentNode.closest(".ant-popover") || node.tagName === "script") {
       continue;
     }
     const matches = node.nodeValue.match(moneyRegex);
     if (matches) {
-      // console.log(node, node.parentNode);
       const parent = node.parentNode;
       const span = document.createElement("span");
       const [calculated, string] = calculate(matches[2]);
@@ -88,8 +81,8 @@ function highlightMoneyAmounts() {
 function injectTooltipComponent() {
   console.log("%c Injecting tooltip component...", "color: blue");
   const reactRootEl = document.createElement("div");
-  reactRootEl.setAttribute("id", "reactRoot");
-  document.body.appendChild(reactRootEl);
+  reactRootEl.setAttribute("id", "therealcost-reactRoot");
+  document.documentElement.appendChild(reactRootEl);
   const reactRoot = createRoot(reactRootEl);
 
   const renderTooltip = () => {
@@ -135,22 +128,32 @@ function observeDocument() {
     observer.disconnect(); // Pause observing
     let shouldHighlight = false;
     for (const mutation of mutations) {
-      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        console.log(mutation.addedNodes);
-        for (const node of mutation.addedNodes) {
-          if (
-            node.nodeType === Node.ELEMENT_NODE &&
-            node.tagName.toLowerCase() !== "script" &&
-            node.id !== "currency-tooltip"
-          ) {
-            shouldHighlight = true;
-            break;
-          }
-        }
-        if (shouldHighlight) {
-          break;
-        }
+      const exclude = document.querySelector(".ant-popover");
+      // console.log(mutation.target);
+      if (
+        exclude &&
+        (mutation.target.contains(exclude) || exclude.contains(mutation.target))
+      ) {
+        // console.log("^^^^^^^^^^^^^ EXCLUDED");
+        continue;
       }
+      shouldHighlight = true;
+
+      // if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+      //   for (const node of mutation.addedNodes) {
+      //     if (
+      //       node.nodeType === Node.ELEMENT_NODE &&
+      //       node.tagName.toLowerCase() !== "script" &&
+      //       node.id !== "currency-tooltip"
+      //     ) {
+      //       shouldHighlight = true;
+      //       break;
+      //     }
+      //   }
+      if (shouldHighlight) {
+        break;
+      }
+      // }
     }
 
     if (shouldHighlight) {
