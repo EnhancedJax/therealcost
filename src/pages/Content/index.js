@@ -109,18 +109,10 @@ function injectHoverComponent() {
     }
   });
 
-  // document.body.addEventListener("mouseout", (e) => {
-  //   if (e.target.classList.contains("highlighted-money")) {
-  //     HoverData.dimensions = null;
-  //     renderHover();
-  //   }
-  // });
-
   console.log("Hover component injected!");
 }
 
 // Observe the document for changes to re-highlight money amounts
-// eslint-disable-next-line no-unused-vars
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing

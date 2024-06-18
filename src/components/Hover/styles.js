@@ -10,6 +10,7 @@ export const Container = styled.div`
   position: absolute;
   left: ${(props) => `${props.d.x + props.d.sX}px`};
   top: ${(props) => `${props.d.y + props.d.sY}px`};
+  z-index: 999; // have the invisible detection area above any elements so the popover shows
 `;
 
 export const ContentContainer = styled.div`
