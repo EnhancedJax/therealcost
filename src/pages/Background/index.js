@@ -1,3 +1,5 @@
+import { restoreOptions } from "../../utils/storage";
+
 function getCurrentTab(callback) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     var currentTab = tabs[0];
@@ -33,7 +35,6 @@ async function writeOption(key, value) {
         }
       });
     });
-    console.log(`Option ${key} set to ${value}`);
   } catch (error) {
     console.error(`Error setting option ${key}:`, error);
   }
@@ -55,29 +56,60 @@ async function reload() {
 /* ---------------------------------- */
 
 chrome.runtime.onMessage.addListener((request) => {
-  switch (request) {
-    case "giveMeCurrentTabPlease":
-      // console.log("Hello");
+  switch (request.message) {
+    /* ---------------- - --------------- */
+    case "getNecessaryInfo":
       getCurrentTab(function (currentTab) {
-        // console.log("Sending current tab", currentTab);
-        chrome.tabs.sendMessage(currentTab.id, { tab: currentTab });
+        restoreOptions().then(async (storage) => {
+          var rates = storage.rates.data;
+          if (
+            !storage?.rates?.lastFetched ||
+            storage?.rates?.lastFetched < Date.now() - 604800000 ||
+            !storage?.rates
+          ) {
+            // if rates are older than a week or not available
+            console.log("Fetching new exchange rate");
+            try {
+              const response = await fetch(
+                "https://open.er-api.com/v6/latest/USD"
+              );
+              const data = await response.json();
+              const { rates: ratesData } = data;
+              chrome.storage.sync.set({
+                rates: { data: ratesData, lastFetched: Date.now() },
+              });
+            } catch (error) {
+              console.error("Error fetching exchange rate:", error);
+            }
+          }
+          chrome.tabs.sendMessage(currentTab.id, {
+            tab: currentTab,
+            settings: storage,
+            rates: rates,
+          });
+        });
       });
       break;
+    /* ---------------- - --------------- */
     case "refresh":
       reload();
       break;
+    /* ---------------- - --------------- */
     case "openOptions":
       chrome.runtime.openOptionsPage();
       break;
+    /* ---------------- - --------------- */
     case "addToBlacklist":
       console.log("addToBlacklist ran");
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        var url = tabs[0].url;
-        if (!url) {
+      getCurrentTab(function (currentTab) {
+        var rawUrl = currentTab.url;
+        if (!rawUrl) {
           console.error("No URL found");
-          console.log(tabs);
           return;
         }
+
+        const url = new URL(rawUrl).origin;
+
         getOption("blacklist").then((blacklist) => {
           if (!blacklist) {
             console.log("Writing new blacklist: " + url);
@@ -90,7 +122,49 @@ chrome.runtime.onMessage.addListener((request) => {
         console.log("Final setting:", getOption("blacklist"));
         reload();
       });
+      break;
+    /* ---------------- - --------------- */
+    case "changeCurrency":
+      console.log("changeCurrency ran");
+      getCurrentTab(function (currentTab) {
+        var rawUrl = currentTab.url;
+        if (!rawUrl) {
+          console.error("No URL found");
+          return;
+        }
+
+        const url = new URL(rawUrl).origin;
+
+        getOption("siteCurrencyMap").then((siteCurrencyMap) => {
+          console.log("siteCurrencyMap:", siteCurrencyMap);
+          if (!siteCurrencyMap) {
+            console.log("Writing new siteCurrencyMap: " + url);
+            writeOption("siteCurrencyMap", [
+              {
+                url: url,
+                currency: request.value,
+              },
+            ]);
+          } else {
+            const updatedMap = siteCurrencyMap.map((site) => {
+              if (site.url === url) {
+                return {
+                  url: site.url,
+                  currency: request.value,
+                };
+              }
+              return site;
+            });
+            writeOption("siteCurrencyMap", updatedMap);
+            console.log("Updated siteCurrencyMap:", updatedMap);
+          }
+        });
+      });
+      reload();
+      break;
+    /* ---------------- - --------------- */
     default:
+      console.log("Background received message:", request);
       break;
   }
 });

@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover";
-import { restoreOptions } from "../../utils/storage";
 
 console.log("Content script works!");
 
@@ -16,18 +15,29 @@ let HoverData = {
 };
 
 let settings = {};
+let rates = {};
+let adjustedHourlyWage = NaN;
 
 /* -------- Section Functions ------- */
 
+function convertSiteCurrency(url) {
+  const siteCurrencyMap = settings.siteCurrencyMap;
+  const site = siteCurrencyMap.find((site) => site.url === url);
+  if (site) {
+    adjustedHourlyWage =
+      (rates[site.currency] / rates[settings.currency]) * settings.hourlyWage;
+  }
+}
+
 function calculate(numStr) {
-  let calculated = (
-    parseFloat(
-      numStr.replace(/,/g, numStr.length - 3 !== numStr.indexOf(",") ? "" : ",")
-    ) / settings.hourlyWage
-  ).toFixed(2);
+  const num = parseFloat(
+    numStr.replace(/,/g, numStr.length - 3 !== numStr.indexOf(",") ? "" : ",")
+  );
+  let calculated = (num / adjustedHourlyWage).toFixed(2);
   const string =
     (calculated < 10 ? calculated : calculated.split(".")[0]) + " hours";
-  return [calculated, string];
+  const toRej = settings.minAmount > num;
+  return [calculated, string, toRej];
 }
 
 // Function to detect and highlight money amounts
@@ -46,9 +56,13 @@ function highlightMoneyAmounts() {
     }
     const matches = node.nodeValue.match(moneyRegex);
     if (matches) {
+      // matches[0] = full match, matches[1] = currency, matches[2] = amount
       const parent = node.parentNode;
       const span = document.createElement("span");
-      const [calculated, string] = calculate(matches[2]);
+      const [calculated, string, toRej] = calculate(matches[2]);
+      if (toRej) {
+        continue;
+      }
 
       span.className = "highlighted-money";
       if (settings.replace) {
@@ -59,7 +73,6 @@ function highlightMoneyAmounts() {
 
       Object.assign(span.style, spanStyle);
 
-      // give Hover component access to the data
       span.dataset.currency = matches[1];
       span.dataset.amount = matches[2];
       span.dataset.calculated = calculated;
@@ -119,7 +132,6 @@ function observeDocument() {
     let shouldHighlight = false;
     for (const mutation of mutations) {
       const exclude = document.querySelector(".ant-popover");
-      // console.log(mutation.target);
       if (
         exclude &&
         (mutation.target.contains(exclude) || exclude.contains(mutation.target))
@@ -162,24 +174,23 @@ function observeDocument() {
 
 /* -------- Section Initialization ------- */
 
-chrome.runtime.sendMessage("giveMeCurrentTabPlease");
+chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.tab) {
-    const url = message.tab.url;
+  if (message) {
+    const rawUrl = message.tab.url;
+    const url = new URL(rawUrl).origin;
 
-    restoreOptions().then((items) => {
-      Object.assign(settings, items);
-      settings.blacklist = settings.blacklist.filter(
-        (entry) => entry !== null && entry !== undefined
-      );
-      if (settings.blacklist.includes(url)) {
-        console.log("Blacklisted site:", url);
-        return;
-      }
-      injectHoverComponent();
-      highlightMoneyAmounts();
-      observeDocument();
-    });
+    Object.assign(settings, message.settings);
+    console.log("Rates:", message.rates);
+    Object.assign(rates, message.rates);
+    if (settings.blacklist.includes(url)) {
+      console.log("Blacklisted site:", url);
+      return;
+    }
+    convertSiteCurrency(url);
+    injectHoverComponent();
+    highlightMoneyAmounts();
+    observeDocument();
   }
 });

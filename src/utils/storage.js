@@ -1,9 +1,9 @@
 import { defaultSettings } from "../pages/Content/constants";
 
-async function restoreOptions() {
+async function restoreOptions(restore = defaultSettings) {
   try {
     const items = await new Promise((resolve, reject) => {
-      chrome.storage.sync.get(defaultSettings, (items) => {
+      chrome.storage.sync.get(restore, (items) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {

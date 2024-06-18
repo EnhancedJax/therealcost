@@ -4,11 +4,14 @@ export const defaultSettings = {
   daysPerWeek: 5,
   currency: "HKD",
   replace: true,
-  blacklist: [],
+  blacklist: ["https://discord.com/"],
+  siteCurrencyMap: [],
+  minAmount: 10,
+  rates: {},
 };
 
 export const moneyRegex =
-  /((?:US|USD|EUR|JPY|GBP|AUD|CAD|CA|CHF|HKD|HK|CNY|SEK|NZD|MXN)?\s?[$£¥€])\s?(\d+([.,]\d+)?)/m;
+  /((?:US|USD|EUR|JPY|GBP|AUD|CAD|CA|CHF|HKD|HK|CNY|SEK|NZD|MXN)?\s?[$£¥€])\s?(\d+(?:,\d{3})*(?:[.,]\d+)?)/m;
 
 export const spanStyle = {
   textDecoration: "underline",

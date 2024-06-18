@@ -15,8 +15,6 @@ export default function Cal({ days }) {
     )
   );
 
-  console.log(calendarDays);
-
   //calendar is 5 days tall, 7 days wide
 
   return (
