@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover/index.jsx";
 import i18n from "../../utils/i18n.js";
+import { findParent, matchTextOnPage } from "../../utils/matchTextOnPage.js";
 console.log("Content script works!");
 console.log(i18n);
 
@@ -47,50 +48,53 @@ function calculate(numStr) {
 // Function to detect and highlight money amounts
 function highlightMoneyAmounts() {
   console.log("%c Highlighting money amounts...", "color: blue");
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  let node;
-  while ((node = walker.nextNode())) {
-    if (node.parentNode.closest(".ant-popover") || node.tagName === "script") {
-      continue;
+
+  function highlightNode(currentBatch, matches, combinedText) {
+    console.log("Highlighting node...");
+    const parent = findParent(currentBatch[0]);
+    var spanClasses = [];
+    var spanStyles = {};
+    if (currentBatch.length > 1) {
+      const spanParent = currentBatch[1].parentNode;
+      if (spanParent.classList.length > 0) {
+        spanClasses = Array.from(spanParent.classList);
+        spanStyles = Object.assign({}, spanParent.style);
+        // console.log(spanStyles);
+      }
+
+      const parentText = parent.textContent.trim();
+      parent.textContent = parentText;
     }
-    const matches = node.nodeValue.match(moneyRegex);
-    if (matches) {
-      // matches[0] = full match, matches[1] = currency, matches[2] = amount
-      const parent = node.parentNode;
-      const span = document.createElement("span");
-      const [calculated, string, toRej] = calculate(matches[2]);
-      if (toRej) {
-        continue;
-      }
 
-      span.className = "highlighted-money";
-      if (settings.replace) {
-        span.textContent = string;
-      } else {
-        span.textContent = matches[0];
-      }
-
-      Object.assign(span.style, spanStyle);
-
-      span.dataset.currency = matches[1];
-      span.dataset.amount = matches[2];
-      span.dataset.calculated = calculated;
-
-      const parts = node.nodeValue.split(matches[0]);
-      if (matches[0].startsWith(" ")) {
-        // Add a space after the matched text if it starts with a space. (Lazy fix for regex matching inital space with HKD)
-        parts[0] += " ";
-      }
-      parent.insertBefore(document.createTextNode(parts[0]), node); // Insert text before the matched text
-      parent.insertBefore(span, node);
-      node.nodeValue = parts[1]; // Update node value to remove the matched text
+    const [calculated, string, toRej] = calculate(matches[2]);
+    if (toRej) {
+      return;
     }
+
+    const span = document.createElement("span");
+    span.textContent = string;
+    span.className = "highlighted-money";
+    span.classList.add(...spanClasses);
+    span.dataset.currency = matches[1];
+    span.dataset.amount = matches[2];
+    span.dataset.calculated = calculated;
+
+    // Object.assign(span.style, spanStyles);
+    Object.assign(span.style, spanStyle);
+
+    const parts = combinedText.split(matches[0]);
+    if (matches[0].startsWith(" ")) {
+      // Add a space after the matched text if it starts with a space. (Lazy fix for regex matching inital space)
+      parts[0] += " ";
+    }
+
+    const node = parent.childNodes[0];
+    parent.insertBefore(document.createTextNode(parts[0]), node); // Insert text before the matched text
+    parent.insertBefore(span, node);
+    node.nodeValue = parts[1]; // Update node value to remove the matched text
   }
+
+  matchTextOnPage(document.body, moneyRegex, highlightNode);
   console.log("%c Money amounts highlighted!", "color: gold");
 }
 
