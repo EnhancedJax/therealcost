@@ -1,8 +1,9 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover";
-
+import i18n from "../../utils/i18n";
 console.log("Content script works!");
+console.log(i18n);
 
 /* ------- Section definitions ------ */
 
@@ -35,9 +36,10 @@ function calculate(numStr) {
   );
   let calculated = (num / adjustedHourlyWage).toFixed(2);
   const string =
-    (calculated < 10 ? calculated : calculated.split(".")[0]) + " hours";
-  const toRej = settings.minAmount > num;
-  return [calculated, string, toRej];
+    (calculated < 10 ? calculated : calculated.split(".")[0]) +
+    " " +
+    i18n.t("hours");
+  return [calculated, string];
 }
 
 // Function to detect and highlight money amounts

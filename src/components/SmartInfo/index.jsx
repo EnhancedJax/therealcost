@@ -1,5 +1,6 @@
 import { Progress } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import WorkCal from "../Workcal";
 import { Highlight, SmartInfoText } from "./styles";
 
@@ -20,6 +21,7 @@ export default function SmartInfo({ values }) {
     years,
     timeInYears,
   } = values;
+  const { t } = useTranslation();
 
   const progressProps = {
     showInfo: false,
@@ -31,7 +33,9 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          <Highlight>{percentOfDay}%</Highlight> of your {hoursPerDay} hour day.
+          {t("sInfo.underDayPrefix", { hoursPerDay })}
+          <Highlight>{percentOfDay}%</Highlight>
+          {t("sInfo.underDay", { hoursPerDay })}
         </SmartInfoText>
         <Progress
           percent={percentOfDay}
