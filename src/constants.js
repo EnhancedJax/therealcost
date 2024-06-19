@@ -8,6 +8,7 @@ export const defaultSettings = {
   siteCurrencyMap: [],
   minAmount: 10,
   rates: {},
+  theme: "light",
 };
 
 export const moneyRegex =
@@ -17,4 +18,10 @@ export const spanStyle = {
   textDecoration: "underline",
   borderRadius: "5px",
   padding: "2px",
+};
+
+export const ANTTHEME = {
+  token: {
+    fontFamily: "interregular",
+  },
 };

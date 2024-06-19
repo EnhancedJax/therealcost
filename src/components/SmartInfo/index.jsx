@@ -33,9 +33,9 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          {t("sInfo.underDayPrefix", { hoursPerDay })}
+          {t("sInfo.underDay.p", { hoursPerDay })}
           <Highlight>{percentOfDay}%</Highlight>
-          {t("sInfo.underDay", { hoursPerDay })}
+          {t("sInfo.underDay.s", { hoursPerDay })}
         </SmartInfoText>
         <Progress
           percent={percentOfDay}
@@ -49,8 +49,11 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          <Highlight>{days} days</Highlight> of your {daysPerWeek} day work
-          week.
+          {t("sInfo.underMonth.p", { daysPerWeek })}
+          <Highlight>
+            {days} {t("days")}
+          </Highlight>
+          {t("sInfo.underMonth.s", { daysPerWeek })}
         </SmartInfoText>
         <Progress
           percent={percentOfWeek}
@@ -64,8 +67,11 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          <Highlight>{days} days</Highlight> of your {daysPerWeek} day work
-          week.
+          {t("sInfo.underMonth.p", { daysPerWeek })}
+          <Highlight>
+            {days} {t("days")}
+          </Highlight>
+          {t("sInfo.underMonth.s", { daysPerWeek })}
         </SmartInfoText>
         <WorkCal days={days} daysPerWeek={daysPerWeek} />
       </>
@@ -75,7 +81,11 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          <Highlight>{months} months</Highlight> of your days of work.
+          {t("sInfo.underTimeMonth.p")}
+          <Highlight>
+            {months} {t("months")}
+          </Highlight>
+          {t("sInfo.underTimeMonth.s")}
         </SmartInfoText>
         <Progress percent={percentOfYear} steps="12" {...progressProps} />
       </>
@@ -85,8 +95,15 @@ export default function SmartInfo({ values }) {
     return (
       <>
         <SmartInfoText>
-          <Highlight>{timeInMonths} months</Highlight> of constant work without
-          a break, or <Highlight>{months} months</Highlight> of days of work.
+          {t("sInfo.longTimeScale.1")}
+          <Highlight>
+            {timeInMonths} {t("months")}
+          </Highlight>
+          {t("sInfo.longTimeScale.2")}
+          <Highlight>
+            {months} {t("months")}
+          </Highlight>
+          {t("sInfo.longTimeScale.3")}
         </SmartInfoText>
         {percentOfTimeInYears <= 100 && (
           <Progress

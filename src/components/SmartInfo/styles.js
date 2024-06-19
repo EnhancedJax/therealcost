@@ -6,6 +6,7 @@ export const SmartInfoText = styled.p`
 `;
 
 export const Highlight = styled.span`
+  font-family: intermedium;
   font-weight: 500;
   color: #1890ff;
 `;

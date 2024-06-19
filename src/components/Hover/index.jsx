@@ -4,9 +4,19 @@ import {
   ReloadOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Flex, Popover, Select, Tooltip } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Divider,
+  Flex,
+  Popover,
+  Select,
+  Tooltip,
+  theme,
+} from "antd";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ANTTHEME } from "../../constants";
 import SmartInfo from "../SmartInfo";
 import {
   Container,
@@ -69,7 +79,7 @@ const Hover = ({ data, settings }) => {
       </div>
       <Divider type="vertical" style={{ height: "auto" }} />
       <Flex vertical gap="small" justify="center">
-        <Tooltip title="Fix site currency">
+        <Tooltip title={`${t("tooltips.not")} ${settings.currency}?`}>
           {openCurrencySelector ? (
             <Flex gap="small">
               {" "}
@@ -107,7 +117,7 @@ const Hover = ({ data, settings }) => {
             />
           )}
         </Tooltip>
-        <Tooltip title="Do not show on this website">
+        <Tooltip title={t("tooltips.doNotShowOnThisWebsite")}>
           <Button
             onClick={() => {
               chrome.runtime.sendMessage({ message: "addToBlacklist" });
@@ -115,21 +125,33 @@ const Hover = ({ data, settings }) => {
             icon={<EyeInvisibleOutlined />}
           />
         </Tooltip>
-        <Button
-          onClick={() => {
-            chrome.runtime.sendMessage({ message: "openOptions" });
-          }}
-          icon={<SettingOutlined />}
-        />
+        <Tooltip title={t("tooltips.settings")}>
+          <Button
+            onClick={() => {
+              chrome.runtime.sendMessage({ message: "openOptions" });
+            }}
+            icon={<SettingOutlined />}
+          />
+        </Tooltip>
       </Flex>
     </ContentContainer>
   );
   return (
-    <Container id="currency-Hover" d={dimensions}>
-      <Popover content={content} id="test">
-        <PsuedoBox d={dimensions} id="psuedo-box" />
-      </Popover>
-    </Container>
+    <ConfigProvider
+      theme={{
+        algorithm:
+          settings.theme === "light"
+            ? theme.defaultAlgorithm
+            : theme.darkAlgorithm,
+        ...ANTTHEME,
+      }}
+    >
+      <Container id="currency-Hover" d={dimensions}>
+        <Popover content={content} id="test">
+          <PsuedoBox d={dimensions} id="psuedo-box" />
+        </Popover>
+      </Container>
+    </ConfigProvider>
   );
 };
 

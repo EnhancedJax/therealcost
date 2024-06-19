@@ -1,9 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: interregular;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -14,7 +12,7 @@ export const Container = styled.div`
 `;
 
 export const ContentContainer = styled.div`
-  padding: 5px;
+  padding: 10px 5px;
   display: flex;
   align-items: stretch;
 `;
@@ -25,6 +23,7 @@ export const PsuedoBox = styled.div`
 `;
 
 export const Header = styled.p`
+  font-family: interbold;
   margin: 0;
   font-size: 24px;
   font-weight: 800;
@@ -32,8 +31,8 @@ export const Header = styled.p`
 `;
 
 export const ContextHeader = styled.p`
+  font-family: interregular;
   font-size: 12px;
-  font-weight: 300;
   color: gray;
-  margin: 10px 0 0 0;
+  margin: 0;
 `;

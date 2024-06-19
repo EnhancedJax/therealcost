@@ -77,6 +77,20 @@ const Popup = () => {
         <Form.Item label="Replace amount text" name="replace">
           <Switch />
         </Form.Item>
+        <Form.Item label="Theme" name="theme">
+          <Select
+            options={[
+              {
+                value: "light",
+                label: "Light",
+              },
+              {
+                value: "dark",
+                label: "Dark",
+              },
+            ]}
+          />
+        </Form.Item>
         <Form.Item label="Minimum amount to highlight" name="minAmount">
           <InputNumber addonAfter="$" min={0} />
         </Form.Item>

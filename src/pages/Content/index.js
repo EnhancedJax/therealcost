@@ -1,13 +1,13 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import Hover from "../../components/Hover";
-import i18n from "../../utils/i18n";
+import Hover from "../../components/Hover/index.jsx";
+import i18n from "../../utils/i18n.js";
 console.log("Content script works!");
 console.log(i18n);
 
 /* ------- Section definitions ------ */
 
-import { moneyRegex, spanStyle } from "./constants.js";
+import { moneyRegex, spanStyle } from "../../constants.js";
 
 let HoverData = {
   amount: 0,
@@ -27,6 +27,8 @@ function convertSiteCurrency(url) {
   if (site) {
     adjustedHourlyWage =
       (rates[site.currency] / rates[settings.currency]) * settings.hourlyWage;
+  } else {
+    adjustedHourlyWage = settings.hourlyWage;
   }
 }
 
