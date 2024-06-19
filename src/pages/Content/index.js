@@ -72,7 +72,7 @@ function highlightMoneyAmounts() {
     }
 
     const span = document.createElement("span");
-    span.textContent = string;
+    span.textContent = settings.replace ? string : matches[0];
     span.className = "highlighted-money";
     span.classList.add(...spanClasses);
     span.dataset.currency = matches[1];
@@ -94,7 +94,12 @@ function highlightMoneyAmounts() {
     node.nodeValue = parts[1]; // Update node value to remove the matched text
   }
 
-  matchTextOnPage(document.body, moneyRegex, highlightNode);
+  matchTextOnPage(
+    document.body,
+    moneyRegex,
+    highlightNode,
+    ".ant-popover, .highlighted-money"
+  );
   console.log("%c Money amounts highlighted!", "color: gold");
 }
 

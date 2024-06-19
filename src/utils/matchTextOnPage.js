@@ -6,7 +6,12 @@
  * @throws {string} Throws an error if no regex is provided.
  */
 
-function matchTextOnPage(root, regex, callback) {
+function matchTextOnPage(
+  root = document.body,
+  regex,
+  callback = () => {},
+  ignoreSelectors = ""
+) {
   if (!regex) {
     throw "No regex provided";
   }
@@ -23,7 +28,8 @@ function matchTextOnPage(root, regex, callback) {
       NodeFilter.SHOW_TEXT,
       {
         acceptNode: function (node) {
-          return node.data.trim().length > 0
+          return node.data.trim().length > 0 &&
+            !node.parentNode.closest(ignoreSelectors)
             ? NodeFilter.FILTER_ACCEPT
             : NodeFilter.FILTER_SKIP;
         },
@@ -50,24 +56,24 @@ function matchTextOnPage(root, regex, callback) {
       combinedText += node.data.trim();
       currentBatch.push(node);
 
-      console.log(`Node ${index}: ${node.data.trim()}`);
-      console.log(`Combined Text: ${combinedText}`);
+      // console.log(`Node ${index}: ${node.data.trim()}`);
+      // console.log(`Combined Text: ${combinedText}`);
 
       if (
         (index < nodes.length - 1 &&
           findParent(nodes[index + 1]) !== findParent(node)) ||
         index === nodes.length - 1
       ) {
-        console.log(
-          "Non-sibling encountered, resetting combinedText and checking matches"
-        );
+        // console.log(
+        // "Non-sibling encountered, resetting combinedText and checking matches"
+        // );
 
         const matches = combinedText.match(regex);
         if (matches) {
-          console.log("%cMatch Found", "color: gold", matches);
+          // console.log("%cMatch Found", "color: gold", matches);
           callback(currentBatch, matches, combinedText);
         } else {
-          console.log("%cNo Match Found", "color: red");
+          // console.log("%cNo Match Found", "color: red");
         }
         combinedText = "";
         currentBatch = [];
@@ -75,9 +81,9 @@ function matchTextOnPage(root, regex, callback) {
     });
   }
 
-  console.log(`Processing root node: ${root.nodeName}`);
+  // console.log(`Processing root node: ${root.nodeName}`);
   const textNodes = getTextNodes(root);
-  console.log(`Found ${textNodes.length} text nodes`);
+  // console.log(`Found ${textNodes.length} text nodes`);
   checkTextAcrossSiblings(textNodes);
 }
 

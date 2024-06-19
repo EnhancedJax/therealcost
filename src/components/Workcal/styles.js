@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Box = styled.div`
   width: 15px;
   height: 15px;
-  background-color: #f2f2f2;
+  background-color: ${(props) => props.color};
 `;
 
 export const FBox = styled.div`
