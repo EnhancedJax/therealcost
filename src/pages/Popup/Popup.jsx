@@ -8,7 +8,7 @@ import {
   Select,
   Switch,
 } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { restoreOptions, saveOptions } from "../../utils/storage";
 import { Container, ContextHeader, Header } from "./styles";
 
@@ -46,16 +46,23 @@ const formItemLayoutWithOutLabel = {
 const Popup = () => {
   const version = chrome.runtime.getManifest().version;
   const [form] = Form.useForm();
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     restoreOptions().then((items) => {
       form.setFieldsValue(items);
+    });
+
+    chrome.tabs.query({ active: true }, function (tabs) {
+      var currentTab = tabs[0];
+      setUrl(currentTab.url);
     });
   }, []);
 
   const onSave = (values) => {
     console.log("Received values of form: ", values);
     saveOptions(values);
+    chrome.runtime.sendMessage({ message: "refresh" });
   };
 
   return (
@@ -66,18 +73,33 @@ const Popup = () => {
       <Divider plain orientation="left" />
       <Form
         form={form}
-        labelCol={{
-          span: 12,
-        }}
-        wrapperCol={{
-          span: 12,
-        }}
+        requiredMark={"optional"}
         onFinish={onSave}
+        layout="vertical"
+        variant="filled"
       >
-        <Form.Item label="Replace amount text" name="replace">
+        <Form.Item
+          label="Replace amount text"
+          name="replace"
+          rules={[
+            {
+              required: true,
+              message: "Required",
+            },
+          ]}
+        >
           <Switch />
         </Form.Item>
-        <Form.Item label="Theme" name="theme">
+        <Form.Item
+          label="Theme"
+          name="theme"
+          rules={[
+            {
+              required: true,
+              message: "Required",
+            },
+          ]}
+        >
           <Select
             options={[
               {
@@ -91,7 +113,16 @@ const Popup = () => {
             ]}
           />
         </Form.Item>
-        <Form.Item label="Minimum amount to highlight" name="minAmount">
+        <Form.Item
+          label="Minimum amount to highlight"
+          name="minAmount"
+          rules={[
+            {
+              required: true,
+              message: "Required",
+            },
+          ]}
+        >
           <InputNumber addonAfter="$" min={0} />
         </Form.Item>
         <Form.Item
@@ -148,7 +179,7 @@ const Popup = () => {
             ]}
           />
         </Form.Item>
-        <Form.List name="blacklist">
+        <Form.List name="viewBlacklist">
           {(fields, { add, remove }, { errors }) => (
             <>
               {fields.map((field, index) => (
@@ -156,14 +187,16 @@ const Popup = () => {
                   {...(index === 0
                     ? formItemLayout
                     : formItemLayoutWithOutLabel)}
-                  label={index === 0 ? "Blacklist" : ""}
-                  required={false}
+                  label={
+                    index === 0 ? "Don't replace text on these sites:" : ""
+                  }
                   key={field.key}
                 >
                   <Form.Item
                     {...field}
                     validateTrigger={["onChange", "onBlur"]}
                     noStyle
+                    rules={[{ required: true, message: "Required" }]}
                   >
                     <Input
                       placeholder="url"
@@ -172,21 +205,70 @@ const Popup = () => {
                       }}
                     />
                   </Form.Item>
-                  {/* {fields.length > 0 ? ( */}
-                  <MinusCircleOutlined onClick={() => remove(field.name)} />
-                  {/* ) : null} */}
+                  <Button
+                    type="dashed"
+                    onClick={() => remove(field.name)}
+                    style={{
+                      marginLeft: "12px",
+                    }}
+                    icon={<MinusCircleOutlined />}
+                  ></Button>
                 </Form.Item>
               ))}
               <Form.Item>
                 <Button
                   type="dashed"
-                  onClick={() => add()}
-                  style={{
-                    width: "60%",
-                  }}
+                  onClick={() => add(new URL(url).origin)}
                   icon={<PlusOutlined />}
                 >
-                  Add blacklist item
+                  Add this website to replace blacklist
+                </Button>
+                <Form.ErrorList errors={errors} />
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+        <Form.List name="blacklist">
+          {(fields, { add, remove }, { errors }) => (
+            <>
+              {fields.map((field, index) => (
+                <Form.Item
+                  {...(index === 0
+                    ? formItemLayout
+                    : formItemLayoutWithOutLabel)}
+                  label={index === 0 ? "Don't run on these sites:" : ""}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    noStyle
+                    rules={[{ required: true, message: "Required" }]}
+                  >
+                    <Input
+                      placeholder="url"
+                      style={{
+                        width: "60%",
+                      }}
+                    />
+                  </Form.Item>
+                  <Button
+                    type="dashed"
+                    onClick={() => remove(field.name)}
+                    style={{
+                      marginLeft: "12px",
+                    }}
+                    icon={<MinusCircleOutlined />}
+                  ></Button>
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add(new URL(url).origin)}
+                  icon={<PlusOutlined />}
+                >
+                  Add this website to blacklist
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>

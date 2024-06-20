@@ -5,6 +5,7 @@ export const defaultSettings = {
   currency: "HKD",
   replace: true,
   blacklist: ["https://discord.com/"],
+  replaceBlacklist: [],
   siteCurrencyMap: [],
   minAmount: 10,
   rates: {},

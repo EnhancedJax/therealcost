@@ -164,7 +164,7 @@ chrome.runtime.onMessage.addListener((request) => {
       break;
     /* ---------------- - --------------- */
     default:
-      console.log("Background received message:", request);
+      console.log("Background received unhandled message:", request);
       break;
   }
 });
