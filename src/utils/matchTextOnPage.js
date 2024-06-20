@@ -2,13 +2,20 @@
  * Matches text on the page based on a regular expression and applies a callback function to the matched text nodes.
  * @param {Node} root - The root node from which to start searching for text nodes.
  * @param {RegExp} regex - The regular expression used to match the text nodes.
+ * @param {RegExp} regexStop - The regular expression used to stop the search for matches once a match is found.
  * @param {Function} callback - The callback function to be applied to the matched text nodes.
+ * The callback function should accept the following parameters:
+ * - {Array} currentBatch - An array of text nodes that are part of the same batch of text.
+ * - {Array} matches - An array of matches found within the current batch of text.
+ * - {string} combinedText - The combined text of the current batch of text nodes.
+ * @param {string} ignoreSelectors - A string of css selectors to ignore when searching for text nodes.
  * @throws {string} Throws an error if no regex is provided.
  */
 
 function matchTextOnPage(
   root = document.body,
   regex,
+  regexStop,
   callback = () => {},
   ignoreSelectors = ""
 ) {
@@ -21,6 +28,18 @@ function matchTextOnPage(
    * @param {Node} node - The node from which to retrieve the text nodes.
    * @returns {Array} An array of text nodes.
    */
+
+  const ignoreTags = [
+    "SCRIPT",
+    "NOSCRIPT",
+    "IMG",
+    "STYLE",
+    "CODE",
+    "IFRAME",
+    "INPUT",
+    "TEXTAREA",
+  ];
+
   function getTextNodes(node) {
     const textNodes = [];
     const walker = document.createTreeWalker(
@@ -28,10 +47,26 @@ function matchTextOnPage(
       NodeFilter.SHOW_TEXT,
       {
         acceptNode: function (node) {
-          return node.data.trim().length > 0 &&
-            !node.parentNode.closest(ignoreSelectors)
-            ? NodeFilter.FILTER_ACCEPT
-            : NodeFilter.FILTER_SKIP;
+          if (
+            node.data.trim().length === 0 ||
+            ignoreTags.includes(node.parentNode.nodeName) ||
+            node.parentNode.closest(ignoreSelectors)
+          ) {
+            return NodeFilter.FILTER_SKIP;
+          }
+
+          // let parent = node.parentNode;
+          // while (parent) {
+          //   if (
+          //     parent.classList &&
+          //     Array.from(parent.classList).some((cls) => cls.includes("hidden"))
+          //   ) {
+          //     return NodeFilter.FILTER_SKIP;
+          //   }
+          //   parent = parent.parentNode;
+          // }
+
+          return NodeFilter.FILTER_ACCEPT;
         },
       },
       false
@@ -44,6 +79,28 @@ function matchTextOnPage(
     return textNodes;
   }
 
+  function getLastMatch(text) {
+    var m;
+    while (true) {
+      m = text.match(regex);
+      text = text.substring(m.index + 1);
+      if (!text.match(regex)) {
+        break;
+      }
+    }
+    return m;
+  }
+
+  function getAllMatches(text) {
+    var matches = [];
+    var m;
+    while ((m = text.match(regex))) {
+      matches.push(m);
+      text = text.substring(m.index + m[0].length);
+    }
+    return matches;
+  }
+
   /**
    * Checks the text across sibling nodes for matches and applies the callback function to the matched nodes.
    * @param {Array} nodes - An array of text nodes to check.
@@ -51,39 +108,70 @@ function matchTextOnPage(
   function checkTextAcrossSiblings(nodes) {
     let combinedText = "";
     let currentBatch = [];
+    let savedMatch = [];
 
     nodes.forEach((node, index) => {
-      combinedText += node.data.trim();
+      combinedText += node.data.trim() === "-" ? " - " : node.data.trim();
       currentBatch.push(node);
 
-      // console.log(`Node ${index}: ${node.data.trim()}`);
+      console.log(
+        `Node ${index}: ${node.data}, ${node.nodeName}, ${node.parentNode.nodeName}`
+      );
       // console.log(`Combined Text: ${combinedText}`);
 
-      if (
+      const stopMatch =
+        savedMatch.length > 0 ? false : regexStop.test(combinedText);
+      const nonSibling =
         (index < nodes.length - 1 &&
           findParent(nodes[index + 1]) !== findParent(node)) ||
-        index === nodes.length - 1
-      ) {
-        // console.log(
-        // "Non-sibling encountered, resetting combinedText and checking matches"
-        // );
+        index === nodes.length - 1; // checks if the next node is a sibling
 
-        const matches = combinedText.match(regex);
-        if (matches) {
-          // console.log("%cMatch Found", "color: gold", matches);
-          callback(currentBatch, matches, combinedText);
-        } else {
-          // console.log("%cNo Match Found", "color: red");
+      if (savedMatch.length > 0) {
+        const lastMatch = getLastMatch(combinedText);
+
+        if (lastMatch[0] !== savedMatch[savedMatch.length - 1][0]) {
+          // console.log(
+          //   "New match found, saving match and continuing until end of node"
+          // );
+          savedMatch.push(lastMatch);
         }
-        combinedText = "";
-        currentBatch = [];
+        if (!nonSibling) {
+          // console.log(
+          //   "Next node is sibling (not reach end of parent), continuing..."
+          // );
+          return;
+        }
+      }
+
+      if (nonSibling || stopMatch) {
+        // console.log("Stop condition met:", nonSibling, stopMatch);
+
+        const matches = getAllMatches(combinedText);
+        if (matches.length > 0 && stopMatch && !nonSibling) {
+          // note: check stopMatch only when there are matches
+          // console.log(
+          //   "Stop match found, saving match and continuing until end of node"
+          // );
+          savedMatch.push(matches[0]);
+        } else {
+          if (savedMatch.length > 0 || matches.length > 0) {
+            const match = savedMatch.length > 0 ? savedMatch : matches;
+            console.log("%cMatch Found", "color: gold", match);
+            callback(currentBatch, match, combinedText);
+          } else {
+            console.log("%cNo Match Found", "color: red");
+          }
+          savedMatch = [];
+          combinedText = "";
+          currentBatch = [];
+        }
       }
     });
   }
 
-  // console.log(`Processing root node: ${root.nodeName}`);
+  console.log(`Processing root node: ${root.nodeName}`);
   const textNodes = getTextNodes(root);
-  // console.log(`Found ${textNodes.length} text nodes`);
+  console.log(`Found ${textNodes.length} text nodes`);
   checkTextAcrossSiblings(textNodes);
 }
 
@@ -92,12 +180,27 @@ function matchTextOnPage(
  * @param {Node} node - The node for which to find the parent.
  * @returns {Node} The parent node.
  */
+
+const inlineBlocks = [
+  "SPAN",
+  "A",
+  "B",
+  "I",
+  "EM",
+  "STRONG",
+  "CODE",
+  "S",
+  "SMALL",
+];
+
 function findParent(node) {
   let parent = node.parentNode;
-  while (parent.nodeName === "SPAN") {
+  // let level = 0;
+  while (inlineBlocks.includes(parent.nodeName)) {
     parent = parent.parentNode;
+    // level++;
   }
   return parent;
 }
 
-export { findParent, matchTextOnPage };
+export { findParent, inlineBlocks, matchTextOnPage };

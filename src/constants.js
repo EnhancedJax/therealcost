@@ -12,12 +12,12 @@ export const defaultSettings = {
 };
 
 export const moneyRegex =
-  /((?:US|USD|EUR|JPY|GBP|AUD|CAD|CA|CHF|HKD|HK|CNY|SEK|NZD|MXN)?\s?[$£¥€])\s?(\d+(?:,\d{3})*(?:[.,]\d+)?)/m;
+  /(?:([$£¥€])|\s-\s)\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
+
+export const stopWhenMatch = /[.,]\d{1,2}\s/m;
 
 export const spanStyle = {
   textDecoration: "underline",
-  borderRadius: "5px",
-  padding: "2px",
 };
 
 export const ANTTHEME = {

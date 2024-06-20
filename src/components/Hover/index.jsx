@@ -28,7 +28,13 @@ import {
 
 const Hover = ({ data, settings }) => {
   const { t } = useTranslation();
-  const { amount, currency, dimensions, calculated: hours } = data;
+  const {
+    amount,
+    siteCurrency,
+    currency,
+    dimensions,
+    calculated: hours,
+  } = data;
   const { hoursPerDay, daysPerWeek } = settings;
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
 
@@ -64,14 +70,15 @@ const Hover = ({ data, settings }) => {
     timeInYears,
   };
 
-  // console.log(values);
-
   const originalStr = `${currency}${amount}`;
 
   const content = (
     <ContentContainer>
       <div>
-        <ContextHeader>{t("theRealCostOf", { 1: originalStr })}:</ContextHeader>
+        <ContextHeader>
+          {t("theRealCostOf", { 1: originalStr })}{" "}
+          {siteCurrency !== "" ? `(${siteCurrency})` : ""}
+        </ContextHeader>
         <Header>
           {hours} {t("Hours")}
         </Header>
@@ -79,7 +86,11 @@ const Hover = ({ data, settings }) => {
       </div>
       <Divider type="vertical" style={{ height: "auto" }} />
       <Flex vertical gap="small" justify="center">
-        <Tooltip title={`${t("tooltips.not")} ${settings.currency}?`}>
+        <Tooltip
+          title={`${t("tooltips.not")} ${
+            siteCurrency !== "" ? siteCurrency : settings.currency
+          }?`}
+        >
           {openCurrencySelector ? (
             <Flex gap="small">
               {" "}
