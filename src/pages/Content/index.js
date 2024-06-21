@@ -12,6 +12,7 @@ import {
   moneyRegex,
   preMatchIgnoreClasses,
   preMatchIgnoreClassesIncludes,
+  preMatchIgnoreClassesNegative,
   spanStyle,
   stopWhenMatch,
 } from "../../constants.js";
@@ -42,6 +43,9 @@ function getMatchIgnoreSelector() {
       if (
         preMatchIgnoreClassesIncludes.some((ignoreClass) =>
           className.includes(ignoreClass)
+        ) &&
+        !preMatchIgnoreClassesNegative.some((ignoreClass) =>
+          className.includes(ignoreClass)
         )
       ) {
         classNames.add(className);
@@ -53,6 +57,7 @@ function getMatchIgnoreSelector() {
   matchIgnoreSelector = matchIgnoreClasses
     .map((className) => `.${className}`)
     .join(", ");
+  console.log("Match ignore selector:", matchIgnoreSelector);
 }
 
 function getThisSiteReplace(url) {

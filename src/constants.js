@@ -4,7 +4,7 @@ export const defaultSettings = {
   hourlyWage: 75,
   hoursPerDay: 8,
   daysPerWeek: 5,
-  minAmount: 10,
+  minAmount: 5,
   replace: true,
   replace_blacklist: [],
   blacklist: ["https://discord.com/"],
@@ -42,3 +42,4 @@ export const preMatchIgnoreClassesIncludes = [
   "offscreen",
   "screen-reader",
 ];
+export const preMatchIgnoreClassesNegative = ["overflow-hidden"];
