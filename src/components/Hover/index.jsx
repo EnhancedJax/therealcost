@@ -1,8 +1,8 @@
 import {
   DollarOutlined,
-  EyeInvisibleOutlined,
+  EyeOutlined,
+  MinusCircleOutlined,
   ReloadOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -26,7 +26,7 @@ import {
   PsuedoBox,
 } from "./styles";
 
-const Hover = ({ data, settings }) => {
+const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
   const { t } = useTranslation();
   const {
     amount,
@@ -132,7 +132,28 @@ const Hover = ({ data, settings }) => {
           )}
         </Tooltip>
         <Tooltip
-          title={t("tooltips.doNotShowOnThisWebsite")}
+          title={t(
+            siteReplaceBlacklisted
+              ? "tooltips.doReplace"
+              : "tooltips.doNotReplace"
+          )}
+          getPopupContainer={() =>
+            document.getElementById("therealcost-reactRoot")
+          }
+        >
+          <Button
+            onClick={() => {
+              chrome.runtime.sendMessage({
+                message: siteReplaceBlacklisted
+                  ? "removeFromReplaceBlacklist"
+                  : "addToReplaceBlacklist",
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
+        </Tooltip>
+        <Tooltip
+          title={t("tooltips.doNotRun")}
           getPopupContainer={() =>
             document.getElementById("therealcost-reactRoot")
           }
@@ -141,20 +162,7 @@ const Hover = ({ data, settings }) => {
             onClick={() => {
               chrome.runtime.sendMessage({ message: "addToBlacklist" });
             }}
-            icon={<EyeInvisibleOutlined />}
-          />
-        </Tooltip>
-        <Tooltip
-          title={t("tooltips.settings")}
-          getPopupContainer={() =>
-            document.getElementById("therealcost-reactRoot")
-          }
-        >
-          <Button
-            onClick={() => {
-              chrome.runtime.sendMessage({ message: "openOptions" });
-            }}
-            icon={<SettingOutlined />}
+            icon={<MinusCircleOutlined />}
           />
         </Tooltip>
       </Flex>

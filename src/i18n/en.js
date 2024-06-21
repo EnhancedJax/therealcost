@@ -33,7 +33,9 @@ const en = {
     },
     tooltips: {
       not: "Not",
-      doNotShowOnThisWebsite: "Do not show on this website",
+      doNotReplace: "Show amount on this site",
+      doReplace: "See the real cost on this site",
+      doNotRun: "Don't run on this site",
       settings: "Settings",
     },
   },

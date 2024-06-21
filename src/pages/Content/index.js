@@ -29,6 +29,7 @@ let foundSiteCurrency = "";
 let countNoHighlights = 0;
 let regex = moneyRegex;
 let matchIgnoreSelector = "";
+let replace = true;
 
 /* -------- Section Functions ------- */
 
@@ -51,6 +52,14 @@ function getMatchIgnoreSelector() {
   matchIgnoreSelector = matchIgnoreClasses
     .map((className) => `.${className}`)
     .join(", ");
+}
+
+function getThisSiteReplace(url) {
+  if (settings.replace_blacklist.includes(url)) {
+    console.log("Blacklisted site for replace:", url);
+    replace = false;
+  }
+  replace = settings.replace;
 }
 
 function setConversionRate(url) {
@@ -114,11 +123,7 @@ function highlightMoneyAmounts() {
       const [calculated, string, toRej] = calculate(amount);
 
       const span = document.createElement("span");
-      span.textContent = toRej
-        ? fullMatch
-        : settings.replace
-        ? string
-        : fullMatch;
+      span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
       span.className = toRej ? highlightClassHidden : highlightClass;
       span.dataset.currency = currency;
       span.dataset.siteCurrency = foundSiteCurrency;
@@ -171,18 +176,24 @@ function highlightMoneyAmounts() {
   const editSpan = (span, nodeText, fullMatch, currency, amount) => {
     const [calculated, string, toRej] = calculate(amount);
     if (nodeText === fullMatch) {
-      // console.log("Node is match");
-      span.textContent = settings.replace || !toRej ? string : fullMatch;
+      console.log("Node is match");
+      span.textContent = replace || !toRej ? string : fullMatch;
     } else {
-      // console.log("Node in match");
-
-      span.textContent = amount.startsWith(nodeText)
-        ? toRej
-          ? fullMatch
-          : settings.replace
-          ? string
-          : fullMatch
-        : "";
+      console.log("Node in match");
+      if (amount.startsWith(nodeText)) {
+        // If node text is where amount starts
+        span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
+      } else {
+        if (
+          span.childElementCount > 0 &&
+          span.textContent.startsWith(currency)
+        ) {
+          // If node text is where currency starts
+          span.childNodes[0].textContent = toRej ? currency : "";
+        } else {
+          span.textContent = "";
+        }
+      }
     }
     span.classList.add(toRej ? highlightClassHidden : highlightClass);
     span.dataset.currency = currency;
@@ -262,7 +273,7 @@ function highlightMoneyAmounts() {
 }
 
 // Inject Hover component
-function injectHoverComponent() {
+function injectHoverComponent(url) {
   console.log("%c Injecting Hover component...", "color: blue");
   const reactRootEl = document.createElement("div");
   reactRootEl.setAttribute("id", "therealcost-reactRoot");
@@ -270,7 +281,13 @@ function injectHoverComponent() {
   const reactRoot = createRoot(reactRootEl);
 
   const renderHover = () => {
-    reactRoot.render(<Hover data={HoverData} settings={settings} />);
+    reactRoot.render(
+      <Hover
+        data={HoverData}
+        settings={settings}
+        siteReplaceBlacklisted={settings.replace_blacklist.includes(url)}
+      />
+    );
   };
 
   document.body.addEventListener("mouseover", (e) => {
@@ -339,9 +356,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       console.log("Blacklisted site:", url);
       return;
     }
+
     getMatchIgnoreSelector();
+    getThisSiteReplace(url);
     setConversionRate(url);
-    injectHoverComponent();
+    injectHoverComponent(url);
     setTimeout(() => {
       highlightMoneyAmounts();
       observeDocument();

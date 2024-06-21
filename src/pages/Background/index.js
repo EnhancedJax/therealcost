@@ -51,6 +51,38 @@ async function reload() {
   }
 }
 
+async function writeList(key, add = true) {
+  getCurrentTab(function (currentTab) {
+    var rawUrl = currentTab.url;
+    if (!rawUrl) {
+      console.error("No URL found");
+      return;
+    }
+
+    const url = new URL(rawUrl).origin;
+
+    getOption(key).then((list) => {
+      if (add) {
+        if (!list) {
+          console.log("Writing new list: " + url);
+          writeOption(key, [url]);
+        } else if (!list.includes(url)) {
+          console.log("Adding to list: " + url);
+          writeOption(key, [...list, url]);
+        }
+      } else {
+        if (list && list.includes(url)) {
+          console.log("Removing from list: " + url);
+          const updatedList = list.filter((item) => item !== url);
+          writeOption(key, updatedList);
+        }
+      }
+    });
+    console.log("Final setting:", getOption(key));
+    reload();
+  });
+}
+
 /* ---------------------------------- */
 /*              Listener              */
 /* ---------------------------------- */
@@ -100,28 +132,15 @@ chrome.runtime.onMessage.addListener((request) => {
       break;
     /* ---------------- - --------------- */
     case "addToBlacklist":
-      console.log("addToBlacklist ran");
-      getCurrentTab(function (currentTab) {
-        var rawUrl = currentTab.url;
-        if (!rawUrl) {
-          console.error("No URL found");
-          return;
-        }
-
-        const url = new URL(rawUrl).origin;
-
-        getOption("blacklist").then((blacklist) => {
-          if (!blacklist) {
-            console.log("Writing new blacklist: " + url);
-            writeOption("blacklist", [url]);
-          } else if (!blacklist.includes(url)) {
-            console.log("Adding to blacklist: " + url);
-            writeOption("blacklist", [...blacklist, url]);
-          }
-        });
-        console.log("Final setting:", getOption("blacklist"));
-        reload();
-      });
+      writeList("blacklist");
+      break;
+    /* ---------------- - --------------- */
+    case "addToReplaceBlacklist":
+      writeList("replace_blacklist");
+      break;
+    /* ---------------- - --------------- */
+    case "removeFromReplaceBlacklist":
+      writeList("replace_blacklist", false);
       break;
     /* ---------------- - --------------- */
     case "changeCurrency":
