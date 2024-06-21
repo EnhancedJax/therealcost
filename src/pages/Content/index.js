@@ -237,7 +237,10 @@ function highlightMoneyAmounts() {
     regex,
     stopWhenMatch,
     highlightNode,
-    ".ant-popover, .highlighted-money, .visuallyhidden, .aok-hidden, .aok-offscreen"
+    ".ant-popover, .highlighted-money, .visuallyhidden, .aok-hidden, .aok-offscreen",
+    {
+      "-": " - ",
+    }
   );
   countNoHighlights = haveMatches
     ? 0

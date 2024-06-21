@@ -9,6 +9,7 @@
  * - {Array} matches - An array of matches found within the current batch of text.
  * - {string} combinedText - The combined text of the current batch of text nodes.
  * @param {string} ignoreSelectors - A string of css selectors to ignore when searching for text nodes.
+ * @param {Object} nodeReplaceMap - An object containing key-value pairs of text to replace in the text nodes.
  * @throws {string} Throws an error if no regex is provided.
  */
 
@@ -17,7 +18,8 @@ function matchTextOnPage(
   regex,
   regexStop,
   callback = () => {},
-  ignoreSelectors = ""
+  ignoreSelectors = "",
+  nodeReplaceMap = {}
 ) {
   if (!regex) {
     throw "No regex provided";
@@ -101,7 +103,7 @@ function matchTextOnPage(
     let savedMatch = [];
 
     nodes.forEach((node, index) => {
-      combinedText += node.data.trim() === "-" ? " - " : node.data.trim();
+      combinedText += nodeReplaceMap[node.data.trim()] || node.data.trim();
       currentBatch.push(node);
 
       // console.log(
@@ -160,9 +162,9 @@ function matchTextOnPage(
     });
   }
 
-  console.log(`Processing root node: ${root.nodeName}`);
+  // console.log(`Processing root node: ${root.nodeName}`);
   const textNodes = getTextNodes(root);
-  console.log(`Found ${textNodes.length} text nodes`);
+  // console.log(`Found ${textNodes.length} text nodes`);
   checkTextAcrossSiblings(textNodes);
   return result;
 }
