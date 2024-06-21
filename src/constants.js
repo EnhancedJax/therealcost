@@ -1,18 +1,19 @@
 export const defaultSettings = {
+  theme: "light",
+  currency: "HKD",
   hourlyWage: 75,
   hoursPerDay: 8,
   daysPerWeek: 5,
-  currency: "HKD",
-  replace: true,
   minAmount: 10,
-  rates: {},
-  theme: "light",
-  blacklist: ["https://discord.com/"],
+  replace: true,
   replace_blacklist: [],
-  site_currency_map: [],
+  blacklist: ["https://discord.com/"],
   performance_load_delay: 1000,
   performance_max_empty_highlights: 3,
   performance_highlight_cooldown: 3000,
+  performance_stop_threshold: 100,
+  site_currency_map: [],
+  rates: {},
 };
 
 export const moneyRegex =

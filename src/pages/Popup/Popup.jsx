@@ -1,6 +1,7 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
+  Collapse,
   Divider,
   Form,
   Input,
@@ -9,6 +10,7 @@ import {
   Switch,
 } from "antd";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { restoreOptions, saveOptions } from "../../utils/storage";
 import { Container, ContextHeader, Header } from "./styles";
 
@@ -18,7 +20,7 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 4,
+      span: 24,
     },
   },
   wrapperCol: {
@@ -47,10 +49,13 @@ const Popup = () => {
   const version = chrome.runtime.getManifest().version;
   const [form] = Form.useForm();
   const [url, setUrl] = useState("");
+  const { t } = useTranslation();
+  const [rates, setRates] = useState({});
 
   useEffect(() => {
     restoreOptions().then((items) => {
       form.setFieldsValue(items);
+      setRates(items.rates.data);
     });
 
     chrome.tabs.query({ active: true }, function (tabs) {
@@ -68,7 +73,7 @@ const Popup = () => {
   return (
     <Container>
       <Header>
-        The Real Cost <ContextHeader>v{version}</ContextHeader>
+        {t("theRealCost")} <ContextHeader>v{version}</ContextHeader>
       </Header>
       <Divider plain orientation="left" />
       <Form
@@ -79,19 +84,8 @@ const Popup = () => {
         variant="filled"
       >
         <Form.Item
-          label="Replace amount text"
-          name="replace"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <Switch />
-        </Form.Item>
-        <Form.Item
-          label="Theme"
+          label={t("settings.theme.label")}
+          tooltip={t("settings.theme.tooltip")}
           name="theme"
           rules={[
             {
@@ -114,7 +108,31 @@ const Popup = () => {
           />
         </Form.Item>
         <Form.Item
-          label="Minimum amount to highlight"
+          label={t("settings.currency.label")}
+          tooltip={t("settings.currency.tooltip")}
+          name="currency"
+          rules={[
+            {
+              required: true,
+              message: "Required",
+            },
+          ]}
+        >
+          <Select
+            options={
+              rates &&
+              Object.keys(rates).map((key) => ({
+                label: key,
+                value: key,
+              }))
+            }
+            showSearch
+            optionFilterProp="label"
+          />
+        </Form.Item>
+        <Form.Item
+          label={t("settings.minAmount.label")}
+          tooltip={t("settings.minAmount.tooltip")}
           name="minAmount"
           rules={[
             {
@@ -126,7 +144,8 @@ const Popup = () => {
           <InputNumber addonAfter="$" min={0} />
         </Form.Item>
         <Form.Item
-          label="Hourly Wage"
+          label={t("settings.hourlyWage.label")}
+          tooltip={t("settings.hourlyWage.tooltip")}
           name="hourlyWage"
           rules={[
             {
@@ -138,7 +157,8 @@ const Popup = () => {
           <InputNumber addonAfter="$" min={1} />
         </Form.Item>
         <Form.Item
-          label="Working hours"
+          label={t("settings.hoursPerDay.label")}
+          tooltip={t("settings.hoursPerDay.tooltip")}
           name="hoursPerDay"
           rules={[
             {
@@ -150,7 +170,8 @@ const Popup = () => {
           <InputNumber addonAfter="hours" min={1} max={24} />
         </Form.Item>
         <Form.Item
-          label="Working days"
+          label={t("settings.daysPerWeek.label")}
+          tooltip={t("settings.daysPerWeek.tooltip")}
           name="daysPerWeek"
           rules={[
             {
@@ -179,6 +200,19 @@ const Popup = () => {
             ]}
           />
         </Form.Item>
+        <Form.Item
+          label={t("settings.replace.label")}
+          tooltip={t("settings.replace.tooltip")}
+          name="replace"
+          rules={[
+            {
+              required: true,
+              message: "Required",
+            },
+          ]}
+        >
+          <Switch />
+        </Form.Item>
         <Form.List name="viewBlacklist">
           {(fields, { add, remove }, { errors }) => (
             <>
@@ -188,9 +222,10 @@ const Popup = () => {
                     ? formItemLayout
                     : formItemLayoutWithOutLabel)}
                   label={
-                    index === 0 ? "Don't replace text on these sites:" : ""
+                    index === 0 ? t("settings.replace_blacklist.label") : ""
                   }
                   key={field.key}
+                  tooltip={t("settings.replace_blacklist.tooltip")}
                 >
                   <Form.Item
                     {...field}
@@ -221,7 +256,7 @@ const Popup = () => {
                   onClick={() => add(new URL(url).origin)}
                   icon={<PlusOutlined />}
                 >
-                  Add this website to replace blacklist
+                  {t("settings.replace_blacklist.button")}
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>
@@ -236,8 +271,9 @@ const Popup = () => {
                   {...(index === 0
                     ? formItemLayout
                     : formItemLayoutWithOutLabel)}
-                  label={index === 0 ? "Don't run on these sites:" : ""}
+                  label={index === 0 ? t("settings.blacklist.label") : ""}
                   key={field.key}
+                  tooltip={t("settings.blacklist.tooltip")}
                 >
                   <Form.Item
                     {...field}
@@ -268,16 +304,86 @@ const Popup = () => {
                   onClick={() => add(new URL(url).origin)}
                   icon={<PlusOutlined />}
                 >
-                  Add this website to blacklist
+                  {t("settings.blacklist.button")}
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>
             </>
           )}
         </Form.List>
+        <Collapse
+          size="small"
+          style={{ marginBottom: "20px" }}
+          items={[
+            {
+              key: "1",
+              label: t("settings.performance"),
+              children: (
+                <>
+                  <Form.Item
+                    label={t("settings.performance_load_delay.label")}
+                    tooltip={t("settings.performance_load_delay.tooltip")}
+                    name="performance_load_delay"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={0} />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.performance_max_empty_highlights.label")}
+                    tooltip={t(
+                      "settings.performance_max_empty_highlights.tooltip"
+                    )}
+                    name="performance_max_empty_highlights"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={3} />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.performance_highlight_cooldown.label")}
+                    tooltip={t(
+                      "settings.performance_highlight_cooldown.tooltip"
+                    )}
+                    name="performance_highlight_cooldown"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={0} />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.performance_stop_threshold.label")}
+                    tooltip={t("settings.performance_stop_threshold.tooltip")}
+                    name="performance_stop_threshold"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber min={20} />
+                  </Form.Item>
+                </>
+              ),
+            },
+          ]}
+        />
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Save changes
+            {t("settings.save")}
           </Button>
         </Form.Item>
       </Form>

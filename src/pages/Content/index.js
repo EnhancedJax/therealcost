@@ -27,6 +27,7 @@ let rates = {};
 let conversionRate = NaN;
 let foundSiteCurrency = "";
 let countNoHighlights = 0;
+let countNoHighlightsPresist = 0;
 let regex = moneyRegex;
 let matchIgnoreSelector = "";
 let replace = true;
@@ -258,6 +259,7 @@ function highlightMoneyAmounts() {
     }
   );
   countNoHighlights = haveMatches ? 0 : countNoHighlights + 1;
+  countNoHighlightsPresist = haveMatches ? 0 : countNoHighlightsPresist + 1;
 
   countNoHighlights <= 0
     ? console.log(
@@ -318,6 +320,11 @@ function injectHoverComponent(url) {
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
+
+    if (countNoHighlightsPresist >= settings.performance_stop_threshold) {
+      console.log("%c Too many empty highlights, stopping...", "color: red");
+      return;
+    }
 
     if (countNoHighlights >= settings.performance_max_empty_highlights) {
       console.log("%c Too many empty highlights, buffering...", "color: red");
