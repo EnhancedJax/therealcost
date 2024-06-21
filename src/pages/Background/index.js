@@ -135,18 +135,18 @@ chrome.runtime.onMessage.addListener((request) => {
 
         const url = new URL(rawUrl).origin;
 
-        getOption("siteCurrencyMap").then((siteCurrencyMap) => {
-          console.log("siteCurrencyMap:", siteCurrencyMap);
-          if (!siteCurrencyMap) {
-            console.log("Writing new siteCurrencyMap: " + url);
-            writeOption("siteCurrencyMap", [
+        getOption("site_currency_map").then((site_currency_map) => {
+          console.log("site_currency_map:", site_currency_map);
+          if (!site_currency_map) {
+            console.log("Writing new site_currency_map: " + url);
+            writeOption("site_currency_map", [
               {
                 url: url,
                 currency: request.value,
               },
             ]);
           } else {
-            const updatedMap = siteCurrencyMap.map((site) => {
+            const updatedMap = site_currency_map.map((site) => {
               if (site.url === url) {
                 return {
                   url: site.url,
@@ -155,8 +155,8 @@ chrome.runtime.onMessage.addListener((request) => {
               }
               return site;
             });
-            writeOption("siteCurrencyMap", updatedMap);
-            console.log("Updated siteCurrencyMap:", updatedMap);
+            writeOption("site_currency_map", updatedMap);
+            console.log("Updated site_currency_map:", updatedMap);
           }
         });
       });

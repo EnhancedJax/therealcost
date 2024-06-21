@@ -23,11 +23,7 @@ function matchTextOnPage(
     throw "No regex provided";
   }
 
-  /**
-   * Retrieves all text nodes within a given node.
-   * @param {Node} node - The node from which to retrieve the text nodes.
-   * @returns {Array} An array of text nodes.
-   */
+  let result = false;
 
   const ignoreTags = [
     "SCRIPT",
@@ -40,6 +36,11 @@ function matchTextOnPage(
     "TEXTAREA",
   ];
 
+  /**
+   * Retrieves all text nodes within a given node.
+   * @param {Node} node - The node from which to retrieve the text nodes.
+   * @returns {Array} An array of text nodes.
+   */
   function getTextNodes(node) {
     const textNodes = [];
     const walker = document.createTreeWalker(
@@ -54,17 +55,6 @@ function matchTextOnPage(
           ) {
             return NodeFilter.FILTER_SKIP;
           }
-
-          // let parent = node.parentNode;
-          // while (parent) {
-          //   if (
-          //     parent.classList &&
-          //     Array.from(parent.classList).some((cls) => cls.includes("hidden"))
-          //   ) {
-          //     return NodeFilter.FILTER_SKIP;
-          //   }
-          //   parent = parent.parentNode;
-          // }
 
           return NodeFilter.FILTER_ACCEPT;
         },
@@ -114,9 +104,9 @@ function matchTextOnPage(
       combinedText += node.data.trim() === "-" ? " - " : node.data.trim();
       currentBatch.push(node);
 
-      console.log(
-        `Node ${index}: ${node.data}, ${node.nodeName}, ${node.parentNode.nodeName}`
-      );
+      // console.log(
+      //   `Node ${index}: ${node.data}, ${node.nodeName}, ${node.parentNode.nodeName}`
+      // );
       // console.log(`Combined Text: ${combinedText}`);
 
       const stopMatch =
@@ -156,10 +146,11 @@ function matchTextOnPage(
         } else {
           if (savedMatch.length > 0 || matches.length > 0) {
             const match = savedMatch.length > 0 ? savedMatch : matches;
-            console.log("%cMatch Found", "color: gold", match);
+            // console.log("%cMatch Found", "color: gold", match);
+            result = true;
             callback(currentBatch, match, combinedText);
           } else {
-            console.log("%cNo Match Found", "color: red");
+            // console.log("%cNo Match Found", "color: red");
           }
           savedMatch = [];
           combinedText = "";
@@ -173,6 +164,7 @@ function matchTextOnPage(
   const textNodes = getTextNodes(root);
   console.log(`Found ${textNodes.length} text nodes`);
   checkTextAcrossSiblings(textNodes);
+  return result;
 }
 
 /**

@@ -4,12 +4,15 @@ export const defaultSettings = {
   daysPerWeek: 5,
   currency: "HKD",
   replace: true,
-  blacklist: ["https://discord.com/"],
-  replaceBlacklist: [],
-  siteCurrencyMap: [],
   minAmount: 10,
   rates: {},
   theme: "light",
+  blacklist: ["https://discord.com/"],
+  replace_blacklist: [],
+  site_currency_map: [],
+  performance_load_delay: 1000,
+  performance_max_empty_highlights: 3,
+  performance_highlight_cooldown: 3000,
 };
 
 export const moneyRegex =

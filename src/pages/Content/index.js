@@ -2,11 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../../components/Hover/index.jsx";
 import i18n from "../../utils/i18n.js";
-import {
-  findParent,
-  inlineBlocks,
-  matchTextOnPage,
-} from "../../utils/matchTextOnPage.js";
+import { inlineBlocks, matchTextOnPage } from "../../utils/matchTextOnPage.js";
 
 /* ------- Section definitions ------ */
 
@@ -22,20 +18,34 @@ let settings = {};
 let rates = {};
 let conversionRate = NaN;
 let foundSiteCurrency = "";
+let countNoHighlights = 0;
+let regex = moneyRegex;
 
 /* -------- Section Functions ------- */
 
 function setConversionRate(url) {
-  const siteCurrencyMap = settings.siteCurrencyMap;
-  const site = siteCurrencyMap.find((site) => site.url === url);
+  function splice(str, index, add) {
+    return str.slice(0, index) + add + str.slice(index);
+  }
+
+  function injectRegex(currency) {
+    regex = new RegExp(
+      splice(moneyRegex.source, 4, `(?:${currency.slice(0, 2)}|${currency})|`)
+    );
+  }
+
+  const site_currency_map = settings.site_currency_map;
+  const site = site_currency_map.find((site) => site.url === url);
   if (site) {
     const siteCurrency = site.currency;
     const userCurrency = settings.currency;
     conversionRate = rates[userCurrency] / rates[siteCurrency];
     foundSiteCurrency = siteCurrency;
+    injectRegex(siteCurrency);
   } else {
     // site has same currency as user
     conversionRate = 1;
+    injectRegex(settings.currency);
   }
 }
 
@@ -58,7 +68,7 @@ function calculate(numStr) {
 
 // Function to detect and highlight money amounts
 function highlightMoneyAmounts() {
-  console.log("%c Highlighting money amounts...", "color: cyan");
+  // console.log("%c Highlighting money amounts...", "color: cyan");
 
   function splitFirst(delimiter, string) {
     const index = string.indexOf(delimiter);
@@ -69,25 +79,15 @@ function highlightMoneyAmounts() {
   }
 
   function highlightNode(currentBatch, matches, combinedText) {
-    console.log("%cHighlighting node...", "color: green");
-    const parent = findParent(currentBatch[0]);
-    // var spanClasses = [];
-    // var spanStyles = {};
-    // if (currentBatch.length > 1) {
-    //   const spanParent = currentBatch[1].parentNode;
-    //   if (spanParent.classList.length > 0) {
-    //     spanClasses = Array.from(spanParent.classList);
-    //     spanStyles = Object.assign({}, spanParent.style);
-    //   }
-    // }
-    console.log(
-      "currentBatch.data:",
-      currentBatch.map((node) => node)
-    );
-    console.log("-----");
-    console.log("combinedText:", combinedText);
-    console.log("matches:", matches);
-    console.log("-----");
+    // console.log("%cHighlighting node...", "color: green");
+    // console.log(
+    //   "currentBatch.data:",
+    //   currentBatch.map((node) => node)
+    // );
+    // console.log("-----");
+    // console.log("combinedText:", combinedText);
+    // console.log("matches:", matches);
+    // console.log("-----");
 
     let lastMatchIndex = 0;
     currentBatch.forEach((node, index) => {
@@ -98,7 +98,7 @@ function highlightMoneyAmounts() {
         return;
       }
       if (!inlineBlocks.includes(parent.nodeName)) {
-        console.log("Case: Not inline block", nodeText);
+        // console.log("Case: Not inline block", nodeText);
         while (true) {
           const match = matches[lastMatchIndex];
           const textContent = node.textContent;
@@ -107,12 +107,13 @@ function highlightMoneyAmounts() {
             textContent.includes(match[0])
           ) {
             const [calculated, string, toRej] = calculate(match[2]);
-            // if (toRej) {
-            //   return;
-            // }
+            if (toRej) {
+              lastMatchIndex++;
+              return;
+            }
 
-            console.log("Match found in node", textContent);
-            console.log("(Direct text element) Creating new span...");
+            // console.log("Match found in node", textContent);
+            // console.log("(Direct text element) Creating new span...");
             const span = document.createElement("span"); // `span` element to wrap the matched text
             span.textContent = settings.replace ? string : match[0];
             span.className = "highlighted-money";
@@ -138,7 +139,7 @@ function highlightMoneyAmounts() {
             parent.insertBefore(span, node);
             node.textContent = parts[1];
 
-            console.log("Match highlighted! (Direct text element");
+            // console.log("Match highlighted! (Direct text element");
 
             lastMatchIndex++;
           } else {
@@ -148,21 +149,22 @@ function highlightMoneyAmounts() {
       } else {
         const match = matches[lastMatchIndex];
         if (match[0].includes(nodeText)) {
-          console.log("Case: Inline block direct match", nodeText);
+          // console.log("Case: Inline block direct match", nodeText);
           const span = node.parentNode;
           const [calculated, string, toRej] = calculate(match[2]);
-          // if (toRej) {
-          //   return;
-          // }
+          if (toRej) {
+            return;
+          }
+
           if (nodeText === match[0]) {
-            console.log("Node is match");
-            console.log("(Span element) Modifying existing span...");
+            // console.log("Node is match");
+            // console.log("(Span element) Modifying existing span...");
             span.textContent = settings.replace ? string : match[0];
 
             lastMatchIndex++;
           } else {
-            console.log("Node in match");
-            console.log("(Span element) Modifying existing span...", nodeText);
+            // console.log("Node in match");
+            // console.log("(Span element) Modifying existing span...", nodeText);
             span.textContent = match[2].startsWith(nodeText)
               ? settings.replace
                 ? string
@@ -176,7 +178,7 @@ function highlightMoneyAmounts() {
           span.dataset.calculated = calculated;
           Object.assign(span.style, spanStyle);
         } else {
-          console.log("Case: Inline block indirect match", nodeText);
+          // console.log("Case: Inline block indirect match", nodeText);
           while (true) {
             const textContent = node.textContent;
             if (
@@ -184,12 +186,13 @@ function highlightMoneyAmounts() {
               textContent.includes(match[0])
             ) {
               const [calculated, string, toRej] = calculate(match[2]);
-              // if (toRej) {
-              //   return;
-              // }
+              if (toRej) {
+                lastMatchIndex++;
+                return;
+              }
 
-              console.log("Match found in node", textContent);
-              console.log("(Direct text element) Creating new span...");
+              // console.log("Match found in node", textContent);
+              // console.log("(Direct text element) Creating new span...");
               const span = document.createElement("span"); // `span` element to wrap the matched text
               span.textContent = settings.replace ? string : match[0];
               span.className = "highlighted-money";
@@ -215,7 +218,7 @@ function highlightMoneyAmounts() {
               parent.insertBefore(span, node);
               node.textContent = parts[1];
 
-              console.log("Match highlighted! (Direct text element");
+              // console.log("Match highlighted! (Direct text element");
 
               lastMatchIndex++;
             } else {
@@ -226,17 +229,33 @@ function highlightMoneyAmounts() {
       }
     });
 
-    console.log("Node highlighted!");
+    // console.log("Node highlighted!");
   }
 
-  matchTextOnPage(
+  const haveMatches = matchTextOnPage(
     document.body,
-    moneyRegex,
+    regex,
     stopWhenMatch,
     highlightNode,
     ".ant-popover, .highlighted-money, .visuallyhidden, .aok-hidden, .aok-offscreen"
   );
-  console.log("%c Money amounts highlighted!", "color: gold");
+  countNoHighlights = haveMatches
+    ? 0
+    : countNoHighlights == -1
+    ? settings.performance_max_empty_highlights
+    : countNoHighlights + 1;
+
+  // countNoHighlights <= 0
+  //   ? console.log(
+  //       "%c Money amounts highlighted!",
+  //       "color: gold",
+  //       countNoHighlights
+  //     )
+  //   : console.log(
+  //       "%c No money amounts found!",
+  //       "color: red",
+  //       countNoHighlights
+  //     );
 }
 
 // Inject Hover component
@@ -280,6 +299,7 @@ function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
     let shouldHighlight = false;
+
     for (const mutation of mutations) {
       const exclude = document.querySelector(".ant-popover");
       if (
@@ -294,15 +314,26 @@ function observeDocument() {
       if (shouldHighlight) {
         break;
       }
-      // }
     }
 
     if (shouldHighlight) {
-      highlightMoneyAmounts();
-    }
+      const highlightAndObserve = () => {
+        highlightMoneyAmounts();
+        observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
+        console.log("%c Document changed!", "color: green");
+      };
 
-    observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
-    console.log("%c Document changed!", "color: green");
+      if (countNoHighlights >= settings.performance_max_empty_highlights) {
+        console.log("%c Too many empty highlights, buffering...", "color: red");
+
+        setTimeout(() => {
+          countNoHighlights = -1;
+          highlightAndObserve();
+        }, settings.performance_highlight_cooldown);
+      } else {
+        highlightAndObserve();
+      }
+    }
   });
 
   observer.observe(document.body, {
@@ -329,7 +360,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
     setConversionRate(url);
     injectHoverComponent();
-    highlightMoneyAmounts();
-    observeDocument();
+    setTimeout(() => {
+      highlightMoneyAmounts();
+      observeDocument();
+    }, settings.performance_load_delay);
   }
 });
