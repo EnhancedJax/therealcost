@@ -59,8 +59,9 @@ function getThisSiteReplace(url) {
   if (settings.replace_blacklist.includes(url)) {
     console.log("Blacklisted site for replace:", url);
     replace = false;
+  } else {
+    replace = settings.replace;
   }
-  replace = settings.replace;
 }
 
 function setConversionRate(url) {

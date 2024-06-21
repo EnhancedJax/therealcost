@@ -15,7 +15,7 @@ const en = {
     sInfo: {
       underDay: {
         p: "",
-        s: " of your {{hoursPerDay}} hour day.",
+        s: " of your {{hoursPerDay}} hour work day.",
       },
       underMonth: {
         p: "",
