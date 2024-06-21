@@ -16,7 +16,7 @@ export const defaultSettings = {
 };
 
 export const moneyRegex =
-  /(?:([$£¥€])|\s-\s)\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
+  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€])|\s-\s)\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
 
 export const stopWhenMatch = /[.,]\d{1,2}\s/m;
 
@@ -29,3 +29,15 @@ export const ANTTHEME = {
     fontFamily: "interregular",
   },
 };
+
+export const highlightClass = "highlighted-money";
+export const highlightClassHidden = "highlighted-money-hidden";
+export const preMatchIgnoreClasses = [
+  "highlighted-money",
+  "highlighted-money-hidden",
+];
+export const preMatchIgnoreClassesIncludes = [
+  "hidden",
+  "offscreen",
+  "screen-reader",
+];

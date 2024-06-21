@@ -6,7 +6,15 @@ import { inlineBlocks, matchTextOnPage } from "../../utils/matchTextOnPage.js";
 
 /* ------- Section definitions ------ */
 
-import { moneyRegex, spanStyle, stopWhenMatch } from "../../constants.js";
+import {
+  highlightClass,
+  highlightClassHidden,
+  moneyRegex,
+  preMatchIgnoreClasses,
+  preMatchIgnoreClassesIncludes,
+  spanStyle,
+  stopWhenMatch,
+} from "../../constants.js";
 
 let HoverData = {
   amount: 0,
@@ -20,17 +28,37 @@ let conversionRate = NaN;
 let foundSiteCurrency = "";
 let countNoHighlights = 0;
 let regex = moneyRegex;
+let matchIgnoreSelector = "";
 
 /* -------- Section Functions ------- */
 
-function setConversionRate(url) {
-  function splice(str, index, add) {
-    return str.slice(0, index) + add + str.slice(index);
-  }
+function getMatchIgnoreSelector() {
+  const allElements = document.querySelectorAll("*");
+  const classNames = new Set();
+  allElements.forEach((element) => {
+    element.classList.forEach((className) => {
+      if (
+        preMatchIgnoreClassesIncludes.some((ignoreClass) =>
+          className.includes(ignoreClass)
+        )
+      ) {
+        classNames.add(className);
+      }
+    });
+  });
+  const uniqueClassNames = Array.from(classNames);
+  const matchIgnoreClasses = preMatchIgnoreClasses.concat(uniqueClassNames);
+  matchIgnoreSelector = matchIgnoreClasses
+    .map((className) => `.${className}`)
+    .join(", ");
+}
 
+function setConversionRate(url) {
   function injectRegex(currency) {
     regex = new RegExp(
-      splice(moneyRegex.source, 4, `(?:${currency.slice(0, 2)}|${currency})|`)
+      moneyRegex.source
+        .replace("XY", currency.slice(0, 2))
+        .replace("XYZ", currency)
     );
   }
 
@@ -70,195 +98,167 @@ function calculate(numStr) {
 function highlightMoneyAmounts() {
   // console.log("%c Highlighting money amounts...", "color: cyan");
 
-  function splitFirst(delimiter, string) {
+  const splitFirst = (delimiter, string) => {
     const index = string.indexOf(delimiter);
     if (index === -1) {
       return [string]; // Return the original string if the delimiter is not found
     }
     return [string.slice(0, index), string.slice(index + delimiter.length)];
-  }
+  };
 
-  function highlightNode(currentBatch, matches, combinedText) {
+  const createSpans = (node, matches, startIndex) => {
+    const createSpan = (node, fullMatch, currency, amount) => {
+      const parent = node.parentNode;
+      const textContent = node.textContent;
+
+      const [calculated, string, toRej] = calculate(amount);
+
+      const span = document.createElement("span");
+      span.textContent = toRej
+        ? fullMatch
+        : settings.replace
+        ? string
+        : fullMatch;
+      span.className = toRej ? highlightClassHidden : highlightClass;
+      span.dataset.currency = currency;
+      span.dataset.siteCurrency = foundSiteCurrency;
+      span.dataset.amount = amount;
+      span.dataset.calculated = calculated;
+      if (!toRej) {
+        Object.assign(span.style, spanStyle);
+      }
+
+      const parts = splitFirst(fullMatch, textContent);
+      if (fullMatch.startsWith(" ")) {
+        parts[0] += " ";
+      }
+
+      // <div> <--- parent
+      parent.insertBefore(document.createTextNode(parts[0]), node); //   <parts[0]/> <--- 1st insert
+      parent.insertBefore(span, node); //   <span/> <--- 2nd insert
+      node.textContent = parts[1]; //   <node/> <--- sets to parts[1]
+      // </div>
+      return 1;
+    };
+
+    var index = startIndex;
+
+    while (true) {
+      const match = matches[index];
+      const textContent = node.textContent;
+      if (matches.length > index) {
+        // If there are still matches left
+        if (textContent.includes(match[2])) {
+          // If the textContent contains the amount
+          index += createSpan(node, match[0], match[1], match[2]);
+        } else {
+          if (textContent.includes(match[1])) {
+            // If the textContent contains the currency
+            const lastIndex = textContent.lastIndexOf(match[1]);
+            node.textContent =
+              textContent.slice(0, lastIndex) +
+              textContent.slice(lastIndex + match[1].length);
+          }
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    return index;
+  };
+
+  const editSpan = (span, nodeText, fullMatch, currency, amount) => {
+    const [calculated, string, toRej] = calculate(amount);
+    if (nodeText === fullMatch) {
+      // console.log("Node is match");
+      span.textContent = settings.replace || !toRej ? string : fullMatch;
+    } else {
+      // console.log("Node in match");
+
+      span.textContent = amount.startsWith(nodeText)
+        ? toRej
+          ? fullMatch
+          : settings.replace
+          ? string
+          : fullMatch
+        : "";
+    }
+    span.classList.add(toRej ? highlightClassHidden : highlightClass);
+    span.dataset.currency = currency;
+    span.dataset.siteCurrency = foundSiteCurrency;
+    span.dataset.amount = amount;
+    span.dataset.calculated = calculated;
+    if (!toRej) {
+      Object.assign(span.style, spanStyle);
+    }
+
+    return nodeText === fullMatch ? 1 : 0;
+  };
+
+  const matchCallback = (currentBatch, matches, combinedText) => {
     // console.log("%cHighlighting node...", "color: green");
     // console.log(
     //   "currentBatch.data:",
-    //   currentBatch.map((node) => node)
+    //   currentBatch.map((node) => node.data)
     // );
-    // console.log("-----");
-    // console.log("combinedText:", combinedText);
     // console.log("matches:", matches);
-    // console.log("-----");
 
     let lastMatchIndex = 0;
-    currentBatch.forEach((node, index) => {
+    currentBatch.forEach((node) => {
       const nodeText = node.data;
       const parent = node.parentNode;
       if (matches.length <= lastMatchIndex) {
-        console.log("No more matches");
         return;
       }
       if (!inlineBlocks.includes(parent.nodeName)) {
-        // console.log("Case: Not inline block", nodeText);
-        while (true) {
-          const match = matches[lastMatchIndex];
-          const textContent = node.textContent;
-          if (
-            matches.length > lastMatchIndex &&
-            textContent.includes(match[0])
-          ) {
-            const [calculated, string, toRej] = calculate(match[2]);
-            if (toRej) {
-              lastMatchIndex++;
-              return;
-            }
-
-            // console.log("Match found in node", textContent);
-            // console.log("(Direct text element) Creating new span...");
-            const span = document.createElement("span"); // `span` element to wrap the matched text
-            span.textContent = settings.replace ? string : match[0];
-            span.className = "highlighted-money";
-            span.dataset.currency = match[1];
-            span.dataset.siteCurrency = foundSiteCurrency;
-            span.dataset.amount = match[2];
-            span.dataset.calculated = calculated;
-            Object.assign(span.style, spanStyle);
-
-            const parts = splitFirst(match[0], textContent); // removes the matched text from the combined text
-            // Add a space after the matched text if removed (matched) text starts with a space. (Lazy fix for regex matching inital space)
-            if (match[0].startsWith(" ")) {
-              parts[0] += " ";
-            }
-
-            // <div> <--- parent
-            //   <parts[0]/> <--- 1st insert
-            //   <span/> <--- 2nd insert
-            //   <node/> <--- sets to parts[1]
-            // </div>
-
-            parent.insertBefore(document.createTextNode(parts[0]), node); // Insert text before the matched text
-            parent.insertBefore(span, node);
-            node.textContent = parts[1];
-
-            // console.log("Match highlighted! (Direct text element");
-
-            lastMatchIndex++;
-          } else {
-            break;
-          }
-        }
+        // CASE: Node is direct text content of non-inline block
+        lastMatchIndex += createSpans(node, matches, lastMatchIndex);
       } else {
         const match = matches[lastMatchIndex];
         if (match[0].includes(nodeText)) {
-          // console.log("Case: Inline block direct match", nodeText);
+          // Case: Inline block is part / full match of current match
           const span = node.parentNode;
-          const [calculated, string, toRej] = calculate(match[2]);
-          if (toRej) {
-            return;
-          }
-
-          if (nodeText === match[0]) {
-            // console.log("Node is match");
-            // console.log("(Span element) Modifying existing span...");
-            span.textContent = settings.replace ? string : match[0];
-
-            lastMatchIndex++;
-          } else {
-            // console.log("Node in match");
-            // console.log("(Span element) Modifying existing span...", nodeText);
-            span.textContent = match[2].startsWith(nodeText)
-              ? settings.replace
-                ? string
-                : match[0]
-              : "";
-          }
-          span.classList.add("highlighted-money");
-          span.dataset.currency = match[1];
-          span.dataset.siteCurrency = foundSiteCurrency;
-          span.dataset.amount = match[2];
-          span.dataset.calculated = calculated;
-          Object.assign(span.style, spanStyle);
+          lastMatchIndex += editSpan(
+            span,
+            nodeText,
+            match[0],
+            match[1],
+            match[2]
+          );
         } else {
-          // console.log("Case: Inline block indirect match", nodeText);
-          while (true) {
-            const textContent = node.textContent;
-            if (
-              matches.length > lastMatchIndex &&
-              textContent.includes(match[0])
-            ) {
-              const [calculated, string, toRej] = calculate(match[2]);
-              if (toRej) {
-                lastMatchIndex++;
-                return;
-              }
-
-              // console.log("Match found in node", textContent);
-              // console.log("(Direct text element) Creating new span...");
-              const span = document.createElement("span"); // `span` element to wrap the matched text
-              span.textContent = settings.replace ? string : match[0];
-              span.className = "highlighted-money";
-              span.dataset.currency = match[1];
-              span.dataset.siteCurrency = foundSiteCurrency;
-              span.dataset.amount = match[2];
-              span.dataset.calculated = calculated;
-              Object.assign(span.style, spanStyle);
-
-              const parts = splitFirst(match[0], textContent); // removes the matched text from the combined text
-              // Add a space after the matched text if removed (matched) text starts with a space. (Lazy fix for regex matching inital space)
-              if (match[0].startsWith(" ")) {
-                parts[0] += " ";
-              }
-
-              // <div> <--- parent
-              //   <parts[0]/> <--- 1st insert
-              //   <span/> <--- 2nd insert
-              //   <node/> <--- sets to parts[1]
-              // </div>
-
-              parent.insertBefore(document.createTextNode(parts[0]), node); // Insert text before the matched text
-              parent.insertBefore(span, node);
-              node.textContent = parts[1];
-
-              // console.log("Match highlighted! (Direct text element");
-
-              lastMatchIndex++;
-            } else {
-              break;
-            }
-          }
+          // Case: Inline block contains match
+          lastMatchIndex += createSpans(node, matches, lastMatchIndex);
         }
       }
     });
 
     // console.log("Node highlighted!");
-  }
+  };
 
   const haveMatches = matchTextOnPage(
     document.body,
     regex,
     stopWhenMatch,
-    highlightNode,
-    ".ant-popover, .highlighted-money, .visuallyhidden, .aok-hidden, .aok-offscreen",
+    matchCallback,
+    matchIgnoreSelector,
     {
       "-": " - ",
     }
   );
-  countNoHighlights = haveMatches
-    ? 0
-    : countNoHighlights == -1
-    ? settings.performance_max_empty_highlights
-    : countNoHighlights + 1;
+  countNoHighlights = haveMatches ? 0 : countNoHighlights + 1;
 
-  // countNoHighlights <= 0
-  //   ? console.log(
-  //       "%c Money amounts highlighted!",
-  //       "color: gold",
-  //       countNoHighlights
-  //     )
-  //   : console.log(
-  //       "%c No money amounts found!",
-  //       "color: red",
-  //       countNoHighlights
-  //     );
+  countNoHighlights <= 0
+    ? console.log(
+        "%c Money amounts highlighted!",
+        "color: gold",
+        countNoHighlights
+      )
+    : console.log(
+        "%c No money amounts found!",
+        "color: red",
+        countNoHighlights
+      );
 }
 
 // Inject Hover component
@@ -274,7 +274,7 @@ function injectHoverComponent() {
   };
 
   document.body.addEventListener("mouseover", (e) => {
-    if (e.target.classList.contains("highlighted-money")) {
+    if (e.target.classList.contains(highlightClass)) {
       let targetRect = e.target.getBoundingClientRect();
       HoverData = {
         amount: e.target.dataset.amount,
@@ -304,12 +304,12 @@ function observeDocument() {
     let shouldHighlight = false;
 
     for (const mutation of mutations) {
-      const exclude = document.querySelector(".ant-popover");
+      const excludePopover = document.querySelector(".ant-popover");
       if (
-        exclude &&
-        (mutation.target.contains(exclude) || exclude.contains(mutation.target))
+        excludePopover &&
+        (mutation.target.contains(excludePopover) || // mutation -> popover: popover show
+          excludePopover.contains(mutation.target)) // popover -> mutation: popover button clicked
       ) {
-        // console.log("^^^^^^^^^^^^^ EXCLUDED");
         continue;
       }
       shouldHighlight = true;
@@ -320,23 +320,22 @@ function observeDocument() {
     }
 
     if (shouldHighlight) {
-      const highlightAndObserve = () => {
-        highlightMoneyAmounts();
-        observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
-        console.log("%c Document changed!", "color: green");
-      };
-
       if (countNoHighlights >= settings.performance_max_empty_highlights) {
         console.log("%c Too many empty highlights, buffering...", "color: red");
 
         setTimeout(() => {
-          countNoHighlights = -1;
-          highlightAndObserve();
+          countNoHighlights = 0;
+          highlightMoneyAmounts();
+          observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
         }, settings.performance_highlight_cooldown);
       } else {
-        highlightAndObserve();
+        highlightMoneyAmounts();
+        observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
       }
+    } else {
+      observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
     }
+    console.log("%c Document changed!", "color: green");
   });
 
   observer.observe(document.body, {
@@ -355,12 +354,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const url = new URL(rawUrl).origin;
 
     Object.assign(settings, message.settings);
-    console.log("Rates:", message.rates);
     Object.assign(rates, message.rates);
     if (settings.blacklist.includes(url)) {
       console.log("Blacklisted site:", url);
       return;
     }
+    getMatchIgnoreSelector();
     setConversionRate(url);
     injectHoverComponent();
     setTimeout(() => {
