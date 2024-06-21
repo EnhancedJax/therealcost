@@ -90,6 +90,9 @@ const Hover = ({ data, settings }) => {
           title={`${t("tooltips.not")} ${
             siteCurrency !== "" ? siteCurrency : settings.currency
           }?`}
+          getPopupContainer={() =>
+            document.getElementById("therealcost-reactRoot")
+          }
         >
           {openCurrencySelector ? (
             <Flex gap="small">
@@ -128,7 +131,12 @@ const Hover = ({ data, settings }) => {
             />
           )}
         </Tooltip>
-        <Tooltip title={t("tooltips.doNotShowOnThisWebsite")}>
+        <Tooltip
+          title={t("tooltips.doNotShowOnThisWebsite")}
+          getPopupContainer={() =>
+            document.getElementById("therealcost-reactRoot")
+          }
+        >
           <Button
             onClick={() => {
               chrome.runtime.sendMessage({ message: "addToBlacklist" });
@@ -136,7 +144,12 @@ const Hover = ({ data, settings }) => {
             icon={<EyeInvisibleOutlined />}
           />
         </Tooltip>
-        <Tooltip title={t("tooltips.settings")}>
+        <Tooltip
+          title={t("tooltips.settings")}
+          getPopupContainer={() =>
+            document.getElementById("therealcost-reactRoot")
+          }
+        >
           <Button
             onClick={() => {
               chrome.runtime.sendMessage({ message: "openOptions" });
@@ -158,7 +171,13 @@ const Hover = ({ data, settings }) => {
       }}
     >
       <Container id="currency-Hover" d={dimensions}>
-        <Popover content={content} id="test">
+        <Popover
+          content={content}
+          id="test"
+          getPopupContainer={() =>
+            document.getElementById("therealcost-reactRoot")
+          }
+        >
           <PsuedoBox d={dimensions} id="psuedo-box" />
         </Popover>
       </Container>

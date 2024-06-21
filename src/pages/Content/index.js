@@ -301,40 +301,20 @@ function injectHoverComponent() {
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
-    let shouldHighlight = false;
 
-    for (const mutation of mutations) {
-      const excludePopover = document.querySelector(".ant-popover");
-      if (
-        excludePopover &&
-        (mutation.target.contains(excludePopover) || // mutation -> popover: popover show
-          excludePopover.contains(mutation.target)) // popover -> mutation: popover button clicked
-      ) {
-        continue;
-      }
-      shouldHighlight = true;
+    if (countNoHighlights >= settings.performance_max_empty_highlights) {
+      console.log("%c Too many empty highlights, buffering...", "color: red");
 
-      if (shouldHighlight) {
-        break;
-      }
-    }
-
-    if (shouldHighlight) {
-      if (countNoHighlights >= settings.performance_max_empty_highlights) {
-        console.log("%c Too many empty highlights, buffering...", "color: red");
-
-        setTimeout(() => {
-          countNoHighlights = 0;
-          highlightMoneyAmounts();
-          observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
-        }, settings.performance_highlight_cooldown);
-      } else {
+      setTimeout(() => {
+        countNoHighlights = 0;
         highlightMoneyAmounts();
         observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
-      }
+      }, settings.performance_highlight_cooldown);
     } else {
+      highlightMoneyAmounts();
       observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
     }
+
     console.log("%c Document changed!", "color: green");
   });
 
