@@ -5,7 +5,7 @@ export const defaultSettings = {
   hourlyWage: 75,
   hoursPerDay: 8,
   daysPerWeek: 5,
-  minAmount: 5,
+  minAmount: 0,
   noReplace: false,
   replace_blacklist: [],
   blacklist: ["https://discord.com/"],
@@ -24,6 +24,8 @@ export const stopWhenMatch = /[.,]\d{1,2}\s/m;
 
 export const spanStyle = {
   textDecoration: "underline",
+  position: "relative",
+  zIndex: 888,
 };
 
 export const ANTTHEME = {
