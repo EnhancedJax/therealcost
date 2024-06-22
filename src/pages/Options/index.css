@@ -1,0 +1,6 @@
+#app-container {
+  width: 50%;
+  min-width: 400px;
+  display: flex;
+  margin: auto;
+}

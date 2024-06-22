@@ -2,13 +2,15 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   padding: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 `;
 
 export const Header = styled.p`
   margin: 0;
   font-size: 24px;
   font-weight: 800;
-  min-width: 250px;
 `;
 
 export const ContextHeader = styled.span`

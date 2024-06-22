@@ -16,7 +16,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "exclude_matches": ["https://regex101.com/*"],
+      "exclude_matches": ["https://regex101.com/*", "https://github.com/*"],
       "js": ["contentScript.bundle.js"],
       "css": ["content.styles.css"]
     }
