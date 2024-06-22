@@ -11,8 +11,8 @@ import {
   highlightClassHidden,
   moneyRegex,
   preMatchIgnoreClasses,
-  preMatchIgnoreClassesIncludes,
-  preMatchIgnoreClassesNegative,
+  // preMatchIgnoreClassesIncludes,
+  // preMatchIgnoreClassesNegative,
   spanStyle,
   stopWhenMatch,
 } from "../../constants.js";
@@ -36,25 +36,25 @@ let replace = true;
 /* -------- Section Functions ------- */
 
 function getMatchIgnoreSelector() {
-  const allElements = document.querySelectorAll("*");
-  const classNames = new Set();
-  allElements.forEach((element) => {
-    element.classList.forEach((className) => {
-      if (
-        preMatchIgnoreClassesIncludes.some((ignoreClass) =>
-          className.includes(ignoreClass)
-        ) &&
-        !preMatchIgnoreClassesNegative.some((ignoreClass) =>
-          className.includes(ignoreClass)
-        )
-      ) {
-        classNames.add(className);
-      }
-    });
-  });
-  const uniqueClassNames = Array.from(classNames);
-  const matchIgnoreClasses = preMatchIgnoreClasses.concat(uniqueClassNames);
-  matchIgnoreSelector = matchIgnoreClasses
+  // const allElements = document.querySelectorAll("*");
+  // const classNames = new Set();
+  // allElements.forEach((element) => {
+  //   element.classList.forEach((className) => {
+  //     if (
+  //       preMatchIgnoreClassesIncludes.some((ignoreClass) =>
+  //         className.includes(ignoreClass)
+  //       ) &&
+  //       !preMatchIgnoreClassesNegative.some((ignoreClass) =>
+  //         className.includes(ignoreClass)
+  //       )
+  //     ) {
+  //       classNames.add(className);
+  //     }
+  //   });
+  // });
+  // const uniqueClassNames = Array.from(classNames);
+  // const matchIgnoreClasses = preMatchIgnoreClasses.concat(uniqueClassNames);
+  matchIgnoreSelector = preMatchIgnoreClasses
     .map((className) => `.${className}`)
     .join(", ");
   console.log("Match ignore selector:", matchIgnoreSelector);
