@@ -19,8 +19,17 @@ import {
 
 let HoverData = {
   amount: 0,
-  currency: "$",
-  position: null,
+  currency: null,
+  siteCurrency: null,
+  calculated: null,
+  dimensions: {
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0,
+    sX: 0,
+    sY: 0,
+  },
 };
 
 let settings = {};
@@ -28,7 +37,6 @@ let rates = {};
 let conversionRate = NaN;
 let foundSiteCurrency = "";
 let countNoHighlights = 0;
-let countNoHighlightsPresist = 0;
 let regex = moneyRegex;
 let matchIgnoreSelector = "";
 let replace = true;
@@ -65,7 +73,7 @@ function getThisSiteReplace(url) {
     console.log("Blacklisted site for replace:", url);
     replace = false;
   } else {
-    replace = settings.replace;
+    replace = !settings.noReplace;
   }
 }
 
@@ -265,7 +273,6 @@ function highlightMoneyAmounts() {
     }
   );
   countNoHighlights = haveMatches ? 0 : countNoHighlights + 1;
-  countNoHighlightsPresist = haveMatches ? 0 : countNoHighlightsPresist + 1;
 
   countNoHighlights <= 0
     ? console.log(
@@ -285,6 +292,9 @@ function injectHoverComponent(url) {
   console.log("%c Injecting Hover component...", "color: blue");
   const reactRootEl = document.createElement("div");
   reactRootEl.setAttribute("id", "therealcost-reactRoot");
+  reactRootEl.style.position = "absolute";
+  reactRootEl.style.top = "0";
+  reactRootEl.style.left = "0";
   document.documentElement.appendChild(reactRootEl);
   const reactRoot = createRoot(reactRootEl);
 
@@ -297,6 +307,8 @@ function injectHoverComponent(url) {
       />
     );
   };
+
+  renderHover();
 
   document.body.addEventListener("mouseover", (e) => {
     if (e.target.classList.contains(highlightClass)) {
@@ -315,6 +327,7 @@ function injectHoverComponent(url) {
           sY: window.scrollY,
         },
       };
+      console.log("HOVER", HoverData);
       renderHover();
     }
   });
@@ -327,7 +340,7 @@ function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
 
-    if (countNoHighlightsPresist >= settings.performance_stop_threshold) {
+    if (countNoHighlights >= settings.performance_stop_threshold) {
       console.log("%c Too many empty highlights, stopping...", "color: red");
       return;
     }

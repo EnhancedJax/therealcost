@@ -39,6 +39,16 @@ const zh = {
       settings: "設置",
     },
     settings: {
+      label: "設置",
+      titles: {
+        general: "一般",
+        calculation: "計算",
+        siteSpecific: "特定網站",
+        performance: "性能 / 開發者",
+      },
+      lang: {
+        label: "語言",
+      },
       theme: {
         label: "主題",
         tooltip: "當你懸停在金額上時的 PopOver 的主題將顯示。",
@@ -55,14 +65,14 @@ const zh = {
         label: "最低金額",
         tooltip: "頁面上低於此金額的金額將不會被突出顯示。",
       },
-      replace: {
-        label: "用 Real Cost 替換貨幣金額",
+      noReplace: {
+        label: "顯示原始金額",
         tooltip:
-          "如果你禁用此功能, TheRealCost 仍會突出顯示金額, 但不會用The Real Cost替換它們。",
+          "TheRealCost 仍會突出顯示金額, 但不會用The Real Cost替換它們。",
       },
       replace_blacklist: {
-        label: "不要在這些網站上替換文字：",
-        button: "將此頁面添加到替換黑名單",
+        label: "在這些網站上顯示原始金額：",
+        button: "將此頁面添加到顯示原始金額名單",
         tooltip:
           "(特定網站) TheRealCost 仍會突出顯示金額, 但不會用The Real Cost替換它們。",
       },
@@ -72,7 +82,6 @@ const zh = {
         tooltip:
           "(特定網站) TheRealCost 不會在這些網站上運行、檢測和替換金額。",
       },
-      performance: "性能設置",
       performance_load_delay: {
         label: "加載延遲",
         tooltip: "TheRealCost 開始運行前的延遲 (毫秒) 。",

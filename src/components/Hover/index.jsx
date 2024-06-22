@@ -38,8 +38,6 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
   const { hoursPerDay, daysPerWeek } = settings;
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
 
-  if (!dimensions) return null;
-
   /* -------------- Calcs ------------- */
   const rdays = Number(hours / hoursPerDay);
   const days = parseFloat((hours / hoursPerDay).toFixed(2));
@@ -74,7 +72,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
 
   const content = (
     <ContentContainer>
-      <div>
+      <Flex gap="0" vertical justify="center">
         <ContextHeader>
           {t("theRealCostOf", { 1: originalStr })}{" "}
           {siteCurrency !== "" ? `(${siteCurrency})` : ""}
@@ -83,7 +81,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
           {hours} {t("Hours")}
         </Header>
         <SmartInfo values={values} />
-      </div>
+      </Flex>
       <Divider type="vertical" style={{ height: "auto" }} />
       <Flex vertical gap="small" justify="center">
         <Tooltip
@@ -150,6 +148,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
               });
             }}
             icon={<EyeOutlined />}
+            type={siteReplaceBlacklisted ? "primary" : "default"}
           />
         </Tooltip>
         <Tooltip

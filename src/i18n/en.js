@@ -39,6 +39,16 @@ const en = {
       settings: "Settings",
     },
     settings: {
+      label: "Settings",
+      titles: {
+        general: "General",
+        calculation: "Calculation",
+        siteSpecific: "Site Specific",
+        performance: "Performance / Developer",
+      },
+      lang: {
+        label: "Language",
+      },
       theme: {
         label: "Theme",
         tooltip:
@@ -56,13 +66,13 @@ const en = {
         label: "Minimum amount to highlight",
         tooltip: "Amounts on a page under this amount will not be highlighted.",
       },
-      replace: {
-        label: "Replace currency amount with the real cost",
+      noReplace: {
+        label: "Show original amount instead",
         tooltip:
-          "If you disable this, TheRealCost will still highlight amounts, but won't replace them with the real cost.",
+          "If you enable this, TheRealCost will still highlight amounts, but won't replace them with the real cost.",
       },
       replace_blacklist: {
-        label: "Don't replace text on these sites:",
+        label: "Show original amount on these sites:",
         button: "Add this page to replace blacklist",
         tooltip:
           "(Site specific) TheRealCost will still highlight amounts, but won't replace them with the real cost.",
@@ -73,7 +83,6 @@ const en = {
         tooltip:
           "(Site specific) TheRealCost won't run, detect and replace amounts on these sites.",
       },
-      performance: "Performance settings",
       performance_load_delay: {
         label: "Load delay",
         tooltip: "The delay in milliseconds before TheRealCost starts running.",

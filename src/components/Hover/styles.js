@@ -28,6 +28,7 @@ export const Header = styled.p`
   font-size: 24px;
   font-weight: 800;
   min-width: 250px;
+  line-height: 1.5em;
 `;
 
 export const ContextHeader = styled.p`
@@ -35,4 +36,5 @@ export const ContextHeader = styled.p`
   font-size: 12px;
   color: gray;
   margin: 0;
+  line-height: 1.5em;
 `;

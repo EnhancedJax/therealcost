@@ -11,12 +11,20 @@ i18n
       zh: zh,
     },
 
-    lng: "en", // if you're using a language detector, do not define the lng option
     fallbackLng: "en",
 
     interpolation: {
       escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
     },
   });
+
+chrome.storage.sync.get("lang", (data) => {
+  i18n.changeLanguage(data.lang);
+});
+
+export const languages = {
+  en: "English",
+  zh: "中文",
+};
 
 export default i18n;

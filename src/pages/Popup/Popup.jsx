@@ -1,4 +1,11 @@
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CalculatorOutlined,
+  CodeOutlined,
+  GlobalOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Collapse,
@@ -11,6 +18,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import i18n, { languages } from "../../utils/i18n";
 import { restoreOptions, saveOptions } from "../../utils/storage";
 import { Container, ContextHeader, Header } from "./styles";
 
@@ -40,7 +48,7 @@ const formItemLayoutWithOutLabel = {
     },
     sm: {
       span: 20,
-      offset: 4,
+      offset: 0,
     },
   },
 };
@@ -64,260 +72,349 @@ const Popup = () => {
     });
   }, []);
 
-  const onSave = (values) => {
-    console.log("Received values of form: ", values);
-    saveOptions(values);
-    chrome.runtime.sendMessage({ message: "refresh" });
-  };
-
   return (
     <Container>
       <Header>
         {t("theRealCost")} <ContextHeader>v{version}</ContextHeader>
       </Header>
-      <Divider plain orientation="left" />
+      <Divider
+        plain
+        orientation="left"
+        orientationMargin={0}
+        style={{ color: "gray" }}
+      >
+        {t("settings.label")}
+      </Divider>
       <Form
         form={form}
         requiredMark={"optional"}
-        onFinish={onSave}
+        onFinish={(values) => {
+          saveOptions(values);
+          chrome.runtime.sendMessage({ message: "refresh" });
+        }}
         layout="vertical"
         variant="filled"
       >
-        <Form.Item
-          label={t("settings.theme.label")}
-          tooltip={t("settings.theme.tooltip")}
-          name="theme"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <Select
-            options={[
-              {
-                value: "light",
-                label: "Light",
-              },
-              {
-                value: "dark",
-                label: "Dark",
-              },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.currency.label")}
-          tooltip={t("settings.currency.tooltip")}
-          name="currency"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <Select
-            options={
-              rates &&
-              Object.keys(rates).map((key) => ({
-                label: key,
-                value: key,
-              }))
-            }
-            showSearch
-            optionFilterProp="label"
-          />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.minAmount.label")}
-          tooltip={t("settings.minAmount.tooltip")}
-          name="minAmount"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <InputNumber addonAfter="$" min={0} />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.hourlyWage.label")}
-          tooltip={t("settings.hourlyWage.tooltip")}
-          name="hourlyWage"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <InputNumber addonAfter="$" min={1} />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.hoursPerDay.label")}
-          tooltip={t("settings.hoursPerDay.tooltip")}
-          name="hoursPerDay"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <InputNumber addonAfter="hours" min={1} max={24} />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.daysPerWeek.label")}
-          tooltip={t("settings.daysPerWeek.tooltip")}
-          name="daysPerWeek"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <Select
-            showSearch
-            placeholder=""
-            optionFilterProp="label"
-            options={[
-              {
-                value: "4",
-                label: "4 Days",
-              },
-              {
-                value: "5",
-                label: "5 Days",
-              },
-              {
-                value: "6",
-                label: "6 Days",
-              },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item
-          label={t("settings.replace.label")}
-          tooltip={t("settings.replace.tooltip")}
-          name="replace"
-          rules={[
-            {
-              required: true,
-              message: "Required",
-            },
-          ]}
-        >
-          <Switch />
-        </Form.Item>
-        <Form.List name="viewBlacklist">
-          {(fields, { add, remove }, { errors }) => (
-            <>
-              {fields.map((field, index) => (
-                <Form.Item
-                  {...(index === 0
-                    ? formItemLayout
-                    : formItemLayoutWithOutLabel)}
-                  label={
-                    index === 0 ? t("settings.replace_blacklist.label") : ""
-                  }
-                  key={field.key}
-                  tooltip={t("settings.replace_blacklist.tooltip")}
-                >
-                  <Form.Item
-                    {...field}
-                    validateTrigger={["onChange", "onBlur"]}
-                    noStyle
-                    rules={[{ required: true, message: "Required" }]}
-                  >
-                    <Input
-                      placeholder="url"
-                      style={{
-                        width: "60%",
-                      }}
-                    />
-                  </Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => remove(field.name)}
-                    style={{
-                      marginLeft: "12px",
-                    }}
-                    icon={<MinusCircleOutlined />}
-                  ></Button>
-                </Form.Item>
-              ))}
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add(new URL(url).origin)}
-                  icon={<PlusOutlined />}
-                >
-                  {t("settings.replace_blacklist.button")}
-                </Button>
-                <Form.ErrorList errors={errors} />
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
-        <Form.List name="blacklist">
-          {(fields, { add, remove }, { errors }) => (
-            <>
-              {fields.map((field, index) => (
-                <Form.Item
-                  {...(index === 0
-                    ? formItemLayout
-                    : formItemLayoutWithOutLabel)}
-                  label={index === 0 ? t("settings.blacklist.label") : ""}
-                  key={field.key}
-                  tooltip={t("settings.blacklist.tooltip")}
-                >
-                  <Form.Item
-                    {...field}
-                    validateTrigger={["onChange", "onBlur"]}
-                    noStyle
-                    rules={[{ required: true, message: "Required" }]}
-                  >
-                    <Input
-                      placeholder="url"
-                      style={{
-                        width: "60%",
-                      }}
-                    />
-                  </Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => remove(field.name)}
-                    style={{
-                      marginLeft: "12px",
-                    }}
-                    icon={<MinusCircleOutlined />}
-                  ></Button>
-                </Form.Item>
-              ))}
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add(new URL(url).origin)}
-                  icon={<PlusOutlined />}
-                >
-                  {t("settings.blacklist.button")}
-                </Button>
-                <Form.ErrorList errors={errors} />
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
         <Collapse
           size="small"
           style={{ marginBottom: "20px" }}
+          accordion
+          defaultActiveKey={1}
+          expandIcon={({ isActive }) => (
+            <GlobalOutlined rotate={isActive ? 90 : 0} />
+          )}
           items={[
             {
               key: "1",
-              label: t("settings.performance"),
+              label: t("settings.titles.general"),
+              children: (
+                <>
+                  <Form.Item
+                    label={t("settings.lang.label")}
+                    name="lang"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      options={Object.keys(languages).map((key) => ({
+                        value: key,
+                        label: languages[key],
+                      }))}
+                      onChange={(value) => {
+                        i18n.changeLanguage(value);
+                        chrome.runtime.sendMessage({ message: "refresh" });
+                        saveOptions({ lang: value });
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.theme.label")}
+                    tooltip={t("settings.theme.tooltip")}
+                    name="theme"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      options={[
+                        {
+                          value: "light",
+                          label: "Light",
+                        },
+                        {
+                          value: "dark",
+                          label: "Dark",
+                        },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.currency.label")}
+                    tooltip={t("settings.currency.tooltip")}
+                    name="currency"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      options={
+                        rates &&
+                        Object.keys(rates).map((key) => ({
+                          label: key,
+                          value: key,
+                        }))
+                      }
+                      showSearch
+                      optionFilterProp="label"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.minAmount.label")}
+                    tooltip={t("settings.minAmount.tooltip")}
+                    name="minAmount"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber addonAfter="$" min={0} />
+                  </Form.Item>
+                </>
+              ),
+            },
+          ]}
+        />
+        <Collapse
+          size="small"
+          style={{ marginBottom: "20px" }}
+          accordion
+          expandIcon={({ isActive }) => (
+            <CalculatorOutlined rotate={isActive ? 90 : 0} />
+          )}
+          items={[
+            {
+              key: "2",
+              label: t("settings.titles.calculation"),
+              children: (
+                <>
+                  <Form.Item
+                    label={t("settings.hourlyWage.label")}
+                    tooltip={t("settings.hourlyWage.tooltip")}
+                    name="hourlyWage"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber addonAfter="$" min={1} />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.hoursPerDay.label")}
+                    tooltip={t("settings.hoursPerDay.tooltip")}
+                    name="hoursPerDay"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <InputNumber addonAfter="hours" min={1} max={24} />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.daysPerWeek.label")}
+                    tooltip={t("settings.daysPerWeek.tooltip")}
+                    name="daysPerWeek"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder=""
+                      optionFilterProp="label"
+                      options={[
+                        {
+                          value: "4",
+                          label: "4 Days",
+                        },
+                        {
+                          value: "5",
+                          label: "5 Days",
+                        },
+                        {
+                          value: "6",
+                          label: "6 Days",
+                        },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label={t("settings.noReplace.label")}
+                    tooltip={t("settings.noReplace.tooltip")}
+                    name="noReplace"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required",
+                      },
+                    ]}
+                  >
+                    <Switch />
+                  </Form.Item>
+                </>
+              ),
+            },
+          ]}
+        />
+        <Collapse
+          size="small"
+          style={{ marginBottom: "20px" }}
+          accordion
+          expandIcon={({ isActive }) => (
+            <UnorderedListOutlined rotate={isActive ? 90 : 0} />
+          )}
+          items={[
+            {
+              key: "3",
+              label: t("settings.titles.siteSpecific"),
+              children: (
+                <>
+                  <Form.List name="viewBlacklist">
+                    {(fields, { add, remove }, { errors }) => (
+                      <>
+                        {fields.map((field, index) => (
+                          <Form.Item
+                            {...(index === 0
+                              ? formItemLayout
+                              : formItemLayoutWithOutLabel)}
+                            label={
+                              index === 0
+                                ? t("settings.replace_blacklist.label")
+                                : ""
+                            }
+                            key={field.key}
+                            tooltip={t("settings.replace_blacklist.tooltip")}
+                          >
+                            <Form.Item
+                              {...field}
+                              validateTrigger={["onChange", "onBlur"]}
+                              noStyle
+                              rules={[{ required: true, message: "Required" }]}
+                            >
+                              <Input
+                                placeholder="url"
+                                style={{
+                                  width: "60%",
+                                }}
+                              />
+                            </Form.Item>
+                            <Button
+                              type="dashed"
+                              onClick={() => remove(field.name)}
+                              style={{
+                                marginLeft: "12px",
+                              }}
+                              icon={<MinusCircleOutlined />}
+                            ></Button>
+                          </Form.Item>
+                        ))}
+                        <Form.Item>
+                          <Button
+                            type="dashed"
+                            onClick={() => add(new URL(url).origin)}
+                            icon={<PlusOutlined />}
+                          >
+                            {t("settings.replace_blacklist.button")}
+                          </Button>
+                          <Form.ErrorList errors={errors} />
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                  <Form.List name="blacklist">
+                    {(fields, { add, remove }, { errors }) => (
+                      <>
+                        {fields.map((field, index) => (
+                          <Form.Item
+                            {...(index === 0
+                              ? formItemLayout
+                              : formItemLayoutWithOutLabel)}
+                            label={
+                              index === 0 ? t("settings.blacklist.label") : ""
+                            }
+                            key={field.key}
+                            tooltip={t("settings.blacklist.tooltip")}
+                          >
+                            <Form.Item
+                              {...field}
+                              validateTrigger={["onChange", "onBlur"]}
+                              noStyle
+                              rules={[{ required: true, message: "Required" }]}
+                            >
+                              <Input
+                                placeholder="url"
+                                style={{
+                                  width: "60%",
+                                }}
+                              />
+                            </Form.Item>
+                            <Button
+                              type="dashed"
+                              onClick={() => remove(field.name)}
+                              style={{
+                                marginLeft: "12px",
+                              }}
+                              icon={<MinusCircleOutlined />}
+                            ></Button>
+                          </Form.Item>
+                        ))}
+                        <Form.Item>
+                          <Button
+                            type="dashed"
+                            onClick={() => add(new URL(url).origin)}
+                            icon={<PlusOutlined />}
+                          >
+                            {t("settings.blacklist.button")}
+                          </Button>
+                          <Form.ErrorList errors={errors} />
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                </>
+              ),
+            },
+          ]}
+        />
+        <Collapse
+          size="small"
+          style={{ marginBottom: "20px" }}
+          accordion
+          expandIcon={({ isActive }) => (
+            <CodeOutlined rotate={isActive ? 90 : 0} />
+          )}
+          items={[
+            {
+              key: "4",
+              label: t("settings.titles.performance"),
               children: (
                 <>
                   <Form.Item
