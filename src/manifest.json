@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "How much hours does this cost?",
-  "description": "A chrome extension which shows you what the real cost is.",
+  "name": "The Real Cost",
+  "description": "A Chrome extension that shows the real cost of items in terms of hours worked.",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
@@ -11,7 +11,7 @@
   "icons": {
     "128": "icon-128.png"
   },
-  "version": "1.0",
+  "version": "1.0.0",
   "permissions": ["storage", "tabs", "scripting"],
   "content_scripts": [
     {
@@ -26,7 +26,6 @@
     {
       "resources": [
         "*.woff*",
-        "*.tff",
         "content.styles.css",
         "icon-128.png",
         "icon-34.png"

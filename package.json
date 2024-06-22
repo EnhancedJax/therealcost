@@ -1,7 +1,7 @@
 {
   "name": "the-real-cost",
   "version": "1.0.0",
-  "description": "A chrome extension boilerplate built with React 18, Webpack 5, and Webpack Dev Server 4",
+  "description": "A chrome extension which converts prices to hours worked",
   "license": "MIT",
   "repository": {
     "type": "git",
