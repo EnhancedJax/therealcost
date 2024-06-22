@@ -100,6 +100,11 @@ const zh = {
         tooltip: "當頁面更新此次數且未找到突出顯示時, TheRealCost 將停止運行。",
       },
       save: "保存更改",
+      footerButtons: {
+        report: "報告問題",
+        suggest: "建議功能",
+        repo: "Github 倉庫",
+      },
     },
   },
 };

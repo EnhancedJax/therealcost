@@ -6,7 +6,7 @@ import {
 import { Button, Flex } from "antd";
 import React from "react";
 
-const Foot = () => (
+const Foot = ({ t }) => (
   <Flex gap="small" wrap="wrap">
     <Button
       type="dashed"
@@ -14,14 +14,14 @@ const Foot = () => (
       danger
       href="https://github.com/EnhancedJax/therealcost/issues"
     >
-      Report an issue
+      {t("settings.footerButtons.report")}
     </Button>
     <Button
       type="dashed"
       icon={<BulbOutlined />}
       href="https://github.com/EnhancedJax/therealcost/issues"
     >
-      Suggest a feature
+      {t("settings.footerButtons.suggest")}
     </Button>
     {/* <Button type="dashed" icon={<GithubOutlined />}>
       Leave a review
@@ -31,7 +31,7 @@ const Foot = () => (
       icon={<GithubOutlined />}
       href="https://github.com/EnhancedJax/therealcost"
     >
-      View repository
+      {t("settings.footerButtons.repo")}
     </Button>
   </Flex>
 );

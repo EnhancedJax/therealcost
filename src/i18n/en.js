@@ -103,6 +103,11 @@ const en = {
           "When the page updates this amount of times, and no highlights are found, TheRealCost will stop running.",
       },
       save: "Save changes",
+      footerButtons: {
+        report: "Report an issue",
+        suggest: "Suggest a feature",
+        repo: "GitHub Repository",
+      },
     },
   },
 };

@@ -54,7 +54,7 @@ const Popup = () => {
         <SiteSpecific t={t} url={url} />
         <Performance t={t} />
         <Divider />
-        <Foot />
+        <Foot t={t} />
       </Form>
     </Container>
   );
