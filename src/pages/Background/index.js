@@ -187,3 +187,9 @@ chrome.runtime.onMessage.addListener((request) => {
       break;
   }
 });
+
+chrome.runtime.onInstalled.addListener(function (details) {
+  if (details.reason == "install") {
+    chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
+  }
+});
