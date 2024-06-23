@@ -199,12 +199,16 @@ function highlightMoneyAmounts() {
         // If node text is where amount starts
         span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
       } else {
-        if (
-          span.childElementCount > 0 &&
-          span.textContent.startsWith(currency)
-        ) {
+        if (span.childElementCount > 0 && nodeText.startsWith(currency)) {
           // If node text is where currency starts
-          span.childNodes[0].textContent = toRej ? currency : "";
+          if (amount.includes(nodeText.replace(currency, ""))) {
+            // If node text contains amount
+            !toRej
+              ? (span.childNodes[0].textContent = replace ? string : "")
+              : "";
+          } else {
+            span.childNodes[0].textContent = toRej ? currency : "";
+          }
         } else {
           span.textContent = "";
         }
@@ -233,6 +237,7 @@ function highlightMoneyAmounts() {
     let lastMatchIndex = 0;
     currentBatch.forEach((node) => {
       const nodeText = node.data;
+      const nodeTextContent = node.textContent.trim();
       const parent = node.parentNode;
       if (matches.length <= lastMatchIndex) {
         return;
@@ -242,12 +247,12 @@ function highlightMoneyAmounts() {
         lastMatchIndex += createSpans(node, matches, lastMatchIndex);
       } else {
         const match = matches[lastMatchIndex];
-        if (match[0].includes(nodeText)) {
+        if (match[0].includes(nodeTextContent)) {
           // Case: Inline block is part / full match of current match
           const span = node.parentNode;
           lastMatchIndex += editSpan(
             span,
-            nodeText,
+            nodeTextContent,
             match[0],
             match[1],
             match[2]

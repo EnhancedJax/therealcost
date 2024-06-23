@@ -185,6 +185,8 @@ const inlineBlocks = [
   "CODE",
   "S",
   "SMALL",
+  "SUB",
+  "SUP",
 ];
 
 function findParent(node) {
