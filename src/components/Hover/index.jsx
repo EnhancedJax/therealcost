@@ -78,7 +78,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
           {siteCurrency !== "" ? `(${siteCurrency})` : ""}
         </ContextHeader>
         <Header>
-          {hours} {t("Hours")}
+          {hours} {t("hours")}
         </Header>
         <SmartInfo values={values} />
       </Flex>
