@@ -1,9 +1,11 @@
 import { GlobalOutlined, MoonOutlined } from "@ant-design/icons";
 import { Button, Dropdown } from "antd";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import i18n, { languages } from "../../utils/i18n";
 import { saveOptions } from "../../utils/storage";
 import Configurator from "./containers/Configurator";
+import Display from "./containers/Display";
 import {
   Container,
   FooterContainer,
@@ -15,12 +17,13 @@ import {
 export default function Welcome() {
   const version = chrome.runtime.getManifest().version;
   const [data, setData] = useState({
-    currency: "USD",
-    hourlyRate: 30,
-    hoursPerDay: 8,
-    daysPerWeek: 5,
+    currency: null,
+    hourlyRate: null,
+    hoursPerDay: null,
+    daysPerWeek: null,
   });
   const [rates, setRates] = useState({});
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
@@ -30,26 +33,47 @@ export default function Welcome() {
     });
   }, []);
 
+  function handlePageChange(page) {
+    setPage(page);
+  }
+
   return (
     <Container>
       <MainContainer>
-        <Configurator data={data} setData={setData} rates={rates} />
+        <AnimatePresence mode="wait">
+          {page === 0 ? (
+            <motion.div
+              key="page0"
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Configurator
+                data={data}
+                setData={setData}
+                rates={rates}
+                handlePageChange={handlePageChange}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="page1"
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Display />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </MainContainer>
-      {/* <MainContainer>
-        <TC small="true">
-          <TB small="true">If you earn</TB>
-          <TA small="true">$</TA>
-          <TA small="true">30</TA>
-          <TB small="true">per hour, </TB>
-          <TA small="true">80 hours</TA>
-          <TB small="true">a day, </TB>
-          <TA small="true">5 days</TA>
-          <TB small="true">a week...</TB>
-        </TC>
-        <TB>Your new phone isn't $999, it's 33 hours of your life.</TB>
-        <NextContainer></NextContainer>
-      </MainContainer> */}
-      <FooterContainer>
+      <FooterContainer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <Button type="dashed" icon={<MoonOutlined />} size="large" />
         <FooterText>
           THE REAL COST <FooterVersion>{version}</FooterVersion>

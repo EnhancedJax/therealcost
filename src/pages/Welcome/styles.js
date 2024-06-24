@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
 export const Container = styled.div`
@@ -14,7 +15,7 @@ export const Container = styled.div`
 
 export const MainContainer = styled.div`
   display: flex;
-  padding: 60px 30px;
+  padding: 30px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
@@ -23,7 +24,7 @@ export const MainContainer = styled.div`
   align-self: stretch;
 `;
 
-export const FooterContainer = styled.div`
+export const FooterContainer = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,7 +46,7 @@ export const FooterVersion = styled.span`
   font-size: 14px;
 `;
 
-export const TC = styled.p`
+export const TC = styled(motion.p)`
   display: flex;
   width: 1534px;
   align-items: center;
@@ -56,7 +57,7 @@ export const TC = styled.p`
   min-width: 1000px;
 `;
 
-export const TB = styled.span`
+export const TB = styled(motion.span)`
   color: #000;
   font-family: "Kumbh Sans";
   font-size: ${(props) => (props.small ? "48px" : "96px")};
@@ -65,8 +66,8 @@ export const TB = styled.span`
   line-height: 100%; /* 96px */
 `;
 
-export const TA = styled.span`
-  color: #000;
+export const TA = styled(motion.span)`
+  color: ${(props) => (props.pending ? "#ccc" : "#000")};
   font-family: "Kumbh Sans";
   font-size: ${(props) => (props.small ? "48px" : "96px")};
   font-style: normal;
@@ -74,13 +75,9 @@ export const TA = styled.span`
   line-height: 100%; /* 96px */
   border-bottom: 4px solid;
   cursor: pointer;
-  transition: all 0.3s;
-  &:hover {
-    scale: 1.1;
-  }
 `;
 
-export const Arrow = styled.span`
+export const Arrow = styled(motion.span)`
   width: 100px;
   height: 96px;
   flex-shrink: 0;
@@ -106,4 +103,18 @@ export const NextContainer = styled.div`
   align-items: center;
   gap: 10px;
   align-self: stretch;
+`;
+
+export const BlurredOverlay = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 `;
