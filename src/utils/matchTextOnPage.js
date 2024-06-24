@@ -53,7 +53,7 @@ function matchTextOnPage(
           if (
             node.data.trim().length === 0 ||
             ignoreTags.includes(node.parentNode.nodeName) ||
-            node.parentNode.closest(ignoreSelectors)
+            (ignoreSelectors && node.parentNode.closest(ignoreSelectors))
           ) {
             return NodeFilter.FILTER_SKIP;
           }
@@ -137,7 +137,6 @@ function matchTextOnPage(
 
       if (nonSibling || stopMatch) {
         // console.log("Stop condition met:", nonSibling, stopMatch);
-
         const matches = getAllMatches(combinedText);
         if (matches.length > 0 && stopMatch && !nonSibling) {
           // note: check stopMatch only when there are matches
