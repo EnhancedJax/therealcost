@@ -1,7 +1,5 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import Hover from "../../components/Hover/index.jsx";
 import i18n from "../../utils/i18n.js";
+import injectHoverComponent from "../../utils/injectHoverComponent.js";
 import { inlineBlocks, matchTextOnPage } from "../../utils/matchTextOnPage.js";
 
 /* ------- Section definitions ------ */
@@ -16,21 +14,6 @@ import {
   spanStyle,
   stopWhenMatch,
 } from "../../constants.js";
-
-let HoverData = {
-  amount: 0,
-  currency: null,
-  siteCurrency: null,
-  calculated: null,
-  dimensions: {
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-    sX: 0,
-    sY: 0,
-  },
-};
 
 let settings = {};
 let rates = {};
@@ -294,54 +277,6 @@ function highlightMoneyAmounts() {
       );
 }
 
-// Inject Hover component
-function injectHoverComponent(url) {
-  console.log("%c Injecting Hover component...", "color: blue");
-  const reactRootEl = document.createElement("div");
-  reactRootEl.setAttribute("id", "therealcost-reactRoot");
-  reactRootEl.style.position = "absolute";
-  reactRootEl.style.top = "0";
-  reactRootEl.style.left = "0";
-  document.documentElement.appendChild(reactRootEl);
-  const reactRoot = createRoot(reactRootEl);
-
-  const renderHover = () => {
-    reactRoot.render(
-      <Hover
-        data={HoverData}
-        settings={settings}
-        siteReplaceBlacklisted={settings.replace_blacklist.includes(url)}
-      />
-    );
-  };
-
-  renderHover();
-
-  document.body.addEventListener("mouseover", (e) => {
-    if (e.target.classList.contains(highlightClass)) {
-      let targetRect = e.target.getBoundingClientRect();
-      HoverData = {
-        amount: e.target.dataset.amount,
-        currency: e.target.dataset.currency,
-        siteCurrency: e.target.dataset.siteCurrency,
-        calculated: e.target.dataset.calculated,
-        dimensions: {
-          x: targetRect.left,
-          y: targetRect.top,
-          w: targetRect.width,
-          h: targetRect.height,
-          sX: window.scrollX,
-          sY: window.scrollY,
-        },
-      };
-      console.log("HOVER", HoverData);
-      renderHover();
-    }
-  });
-
-  console.log("Hover component injected!");
-}
-
 // Observe the document for changes to re-highlight money amounts
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
@@ -393,7 +328,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     getMatchIgnoreSelector();
     getThisSiteReplace(url);
     setConversionRate(url);
-    injectHoverComponent(url);
+    injectHoverComponent(settings, url);
     setTimeout(() => {
       highlightMoneyAmounts();
       observeDocument();
