@@ -28,17 +28,12 @@ import {
 
 const Hover = ({ data, settings, siteReplaceBlacklisted, isDemo }) => {
   const { t } = useTranslation();
-  const {
-    amount,
-    siteCurrency,
-    currency,
-    dimensions,
-    calculated: hours,
-  } = data;
+  const { amount, siteCurrency, currency, dimensions, calculated } = data;
   const { hoursPerDay, daysPerWeek } = settings;
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
 
   /* -------------- Calcs ------------- */
+  const hours = Number(calculated);
   const rdays = Number(hours / hoursPerDay);
   const days = parseFloat((hours / hoursPerDay).toFixed(2));
   const timeInDays = Number(hours / 24);

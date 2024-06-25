@@ -85,7 +85,7 @@ export default function Try({ rates, data, settings, handlePageChange }) {
                         setTimeout(handlePageChange, 8000);
                       }}
                     >
-                      {data_calculated}
+                      {data_calculated} Hours
                     </motion.p>
                   )}
                 </AnimatePresence>

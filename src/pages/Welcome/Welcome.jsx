@@ -27,7 +27,7 @@ export default function Welcome() {
   });
   const [rates, setRates] = useState({});
   const [settings, setSettings] = useState({});
-  const [page, setPage] = useState(3);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
