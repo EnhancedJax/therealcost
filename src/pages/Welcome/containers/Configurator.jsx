@@ -54,7 +54,6 @@ export default function Configurator({
       >
         <TA
           variants={fadeIn}
-          // whileHover={{ scale: [1, 1.15, 1.1] }}
           transition={{ duration: 0.2 }}
           pending={!data.currency}
         >
@@ -65,7 +64,7 @@ export default function Configurator({
       <Popover
         content={
           <InputNumber
-            defaultValue={defaultValues.hourlyWage}
+            defaultValue=""
             min={1}
             max={99999}
             changeOnWheel={true}
@@ -96,7 +95,7 @@ export default function Configurator({
           <Popover
             content={
               <InputNumber
-                defaultValue={defaultValues.hoursPerDay}
+                defaultValue=""
                 min={1}
                 max={24}
                 changeOnWheel={true}
@@ -128,7 +127,7 @@ export default function Configurator({
           <Popover
             content={
               <InputNumber
-                defaultValue={defaultValues.daysPerWeek}
+                defaultValue=""
                 min={4}
                 max={6}
                 changeOnWheel={true}

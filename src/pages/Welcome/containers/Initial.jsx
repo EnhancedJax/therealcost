@@ -6,7 +6,7 @@ import { InitialContainer } from "../styles";
 export default function Initial({ handlePageChange }) {
   return (
     <InitialContainer
-      variants={stagger(1.5)}
+      variants={stagger(1.5, 1)}
       initial="hidden"
       animate="visible"
       onAnimationComplete={() => {

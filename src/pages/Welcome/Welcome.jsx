@@ -27,7 +27,7 @@ export default function Welcome() {
   });
   const [rates, setRates] = useState({});
   const [settings, setSettings] = useState({});
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(3);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
@@ -52,7 +52,7 @@ export default function Welcome() {
               initial={{ y: 0, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -500, opacity: 0 }}
-              transition={{ duration: 1.2, type: "spring", delay: 1 }}
+              transition={{ duration: 1.2, type: "spring" }}
               style={{ width: "100%" }}
             >
               <Initial handlePageChange={handlePageChange} />

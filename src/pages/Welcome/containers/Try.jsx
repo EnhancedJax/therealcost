@@ -118,7 +118,7 @@ export default function Try({ rates, data, settings, handlePageChange }) {
               <Skeleton />
             </div>
           </BrowserViewContainer>
-          <ExtensionImg src="icon-128.png" width="34px" height="34px" />
+          <ExtensionImg src="icon-128.png" width="32px" height="32px" />
           <PulseCircle
             animate={{
               opacity: [0, 1, 0],

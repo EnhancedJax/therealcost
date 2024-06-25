@@ -1,8 +1,9 @@
-export const stagger = (delay = 0.1) => ({
+export const stagger = (staggerDelay = 0.1, delay = 0) => ({
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: delay,
+      staggerChildren: staggerDelay,
+      delay: delay,
     },
   },
 });
