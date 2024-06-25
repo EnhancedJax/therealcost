@@ -1,25 +1,12 @@
 import { InputNumber, Popover, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { saveOptions } from "../../../utils/storage";
+import { fadeIn, stagger } from "../animations";
 import { Arrow, TA, TB, TC } from "../styles";
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
 
 const defaultValues = {
   currency: "USD",
-  hourlyRate: 30,
+  hourlyWage: 30,
   hoursPerDay: 8,
   daysPerWeek: 5,
 };
@@ -30,13 +17,13 @@ export default function Configurator({
   rates,
   handlePageChange,
 }) {
-  const [section1Complete, setSection1Complete] = useState(true);
-  const [section2Complete, setSection2Complete] = useState(true);
-  const [section3Complete, setSection3Complete] = useState(true);
+  const [section1Complete, setSection1Complete] = useState(false);
+  const [section2Complete, setSection2Complete] = useState(false);
+  const [section3Complete, setSection3Complete] = useState(false);
 
   useEffect(() => {
     console.log(data);
-    if (data.currency && data.hourlyRate) {
+    if (data.currency && data.hourlyWage) {
       setSection1Complete(true);
     }
     if (data.hoursPerDay) {
@@ -48,9 +35,9 @@ export default function Configurator({
   }, [data]);
 
   return (
-    <TC variants={containerVariants} initial="hidden" animate="visible">
+    <TC variants={stagger} initial="hidden" animate="visible">
       {/* Section 1 */}
-      <TB variants={itemVariants}>If you earn</TB>
+      <TB variants={fadeIn}>If you earn</TB>
       <Popover
         content={
           <Select
@@ -67,8 +54,8 @@ export default function Configurator({
         }
       >
         <TA
-          variants={itemVariants}
-          whileHover={{ scale: [1, 1.15, 1.1] }}
+          variants={fadeIn}
+          // whileHover={{ scale: [1, 1.15, 1.1] }}
           transition={{ duration: 0.2 }}
           pending={!data.currency}
         >
@@ -79,34 +66,34 @@ export default function Configurator({
       <Popover
         content={
           <InputNumber
-            defaultValue={defaultValues.hourlyRate}
+            defaultValue={defaultValues.hourlyWage}
             min={1}
             max={99999}
             changeOnWheel={true}
             onPressEnter={(e) => {
-              setData({ ...data, hourlyRate: e.target.value });
+              setData({ ...data, hourlyWage: e.target.value });
             }}
             onChange={(value) => {
-              setData({ ...data, hourlyRate: value });
+              setData({ ...data, hourlyWage: value });
             }}
           />
         }
       >
         <TA
-          variants={itemVariants}
-          whileHover={{ scale: [null, 1.15, 1.1] }}
+          variants={fadeIn}
+          // whileHover={{ scale: [null, 1.15, 1.1] }}
           transition={{ duration: 0.2 }}
-          pending={!data.hourlyRate}
+          pending={!data.hourlyWage}
         >
-          {data.hourlyRate || defaultValues.hourlyRate}
+          {data.hourlyWage || defaultValues.hourlyWage}
         </TA>
       </Popover>
-      <TB variants={itemVariants}>per hour,</TB>
+      <TB variants={fadeIn}>per hour,</TB>
 
       {/* Section 2 */}
       {section1Complete && (
         <>
-          <TB variants={itemVariants}>work</TB>
+          <TB variants={fadeIn}>work</TB>
           <Popover
             content={
               <InputNumber
@@ -124,15 +111,15 @@ export default function Configurator({
             }
           >
             <TA
-              variants={itemVariants}
-              whileHover={{ scale: [null, 1.15, 1.1] }}
+              variants={fadeIn}
+              // whileHover={{ scale: [null, 1.15, 1.1] }}
               transition={{ duration: 0.2 }}
               pending={!data.hoursPerDay}
             >
               {(data.hoursPerDay || defaultValues.hoursPerDay) + " hours"}
             </TA>
           </Popover>
-          <TB variants={itemVariants}>a day, </TB>
+          <TB variants={fadeIn}>a day, </TB>
         </>
       )}
 
@@ -143,7 +130,7 @@ export default function Configurator({
             content={
               <InputNumber
                 defaultValue={defaultValues.daysPerWeek}
-                min={1}
+                min={4}
                 max={6}
                 changeOnWheel={true}
                 onPressEnter={(e) =>
@@ -156,23 +143,23 @@ export default function Configurator({
             }
           >
             <TA
-              variants={itemVariants}
-              whileHover={{ scale: [null, 1.15, 1.1] }}
+              variants={fadeIn}
+              // whileHover={{ scale: [null, 1.15, 1.1] }}
               transition={{ duration: 0.2 }}
               pending={!data.daysPerWeek}
             >
               {(data.daysPerWeek || defaultValues.daysPerWeek) + " days"}
             </TA>
           </Popover>
-          <TB variants={itemVariants}>a week...</TB>
+          <TB variants={fadeIn}>a week...</TB>
         </>
       )}
       {section3Complete && (
         <Arrow
-          variants={itemVariants}
+          variants={fadeIn}
           onClick={() => {
             saveOptions(data);
-            handlePageChange(1);
+            handlePageChange();
           }}
         >
           {">>"}

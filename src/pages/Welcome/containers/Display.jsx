@@ -1,21 +1,36 @@
+import { motion } from "framer-motion";
 import React from "react";
-import { NextContainer, TA, TB, TC } from "../styles";
+import { fadeInUp2, stagger, zoomOut } from "../animations";
+import { T, TA, TB, TC } from "../styles";
 
-export default function Display() {
+export default function Display({ data, rates, handlePageChange }) {
+  const calculated = ((999 * rates[data.currency]) / data.hourlyWage).toFixed(
+    0
+  );
+  const price = (999 * rates[data.currency]).toFixed(0);
   return (
-    <>
-      <TC small="true">
-        <TB small="true">If you earn</TB>
-        <TA small="true">$</TA>
-        <TA small="true">30</TA>
-        <TB small="true">per hour, </TB>
-        <TA small="true">80 hours</TA>
-        <TB small="true">a day, </TB>
-        <TA small="true">5 days</TA>
-        <TB small="true">a week...</TB>
+    <motion.div
+      variants={stagger(1)}
+      initial="hidden"
+      animate="visible"
+      onAnimationComplete={() => {
+        setTimeout(handlePageChange, 3000);
+      }}
+    >
+      <TC variants={zoomOut}>
+        <TB>If you earn</TB>
+        <TA>{data.currency}</TA>
+        <TA>{data.hourlyWage}</TA>
+        <TB>per hour, </TB>
+        <TA>{data.hoursPerDay} hours</TA>
+        <TB>a day, </TB>
+        <TA>{data.daysPerWeek} days</TA>
+        <TB>a week...</TB>
       </TC>
-      <TB>Your new phone isn't $999, it's 33 hours of your life.</TB>
-      <NextContainer></NextContainer>
-    </>
+      <T variants={fadeInUp2}>
+        Your new phone isn't ${price}, it's <TA>{calculated} hours</TA> of your
+        life.
+      </T>
+    </motion.div>
   );
 }

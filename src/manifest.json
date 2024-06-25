@@ -24,12 +24,7 @@
   "devtools_page": "devtools.html",
   "web_accessible_resources": [
     {
-      "resources": [
-        "*.woff*",
-        "content.styles.css",
-        "icon-128.png",
-        "icon-34.png"
-      ],
+      "resources": ["*.woff*", "content.styles.css", "*.png", "*.svg"],
       "matches": ["<all_urls>"]
     }
   ]

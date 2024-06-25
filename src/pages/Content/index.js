@@ -65,7 +65,6 @@ function getMatchIgnoreSelector() {
   matchIgnoreSelector = preMatchIgnoreClasses
     .map((className) => `.${className}`)
     .join(", ");
-  console.log("Match ignore selector:", matchIgnoreSelector);
 }
 
 function getThisSiteReplace(url) {
@@ -239,6 +238,9 @@ function highlightMoneyAmounts() {
       const nodeText = node.data;
       const nodeTextContent = node.textContent.trim();
       const parent = node.parentNode;
+      if (!parent) {
+        return;
+      }
       if (matches.length <= lastMatchIndex) {
         return;
       }

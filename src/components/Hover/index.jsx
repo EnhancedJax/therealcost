@@ -180,7 +180,6 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
       <Container id="currency-Hover" d={dimensions}>
         <Popover
           content={content}
-          id="test"
           getPopupContainer={() =>
             document.getElementById("therealcost-reactRoot")
           }

@@ -6,6 +6,8 @@ import i18n, { languages } from "../../utils/i18n";
 import { saveOptions } from "../../utils/storage";
 import Configurator from "./containers/Configurator";
 import Display from "./containers/Display";
+import Initial from "./containers/Initial";
+import Try from "./containers/Try";
 import {
   Container,
   FooterContainer,
@@ -18,12 +20,12 @@ export default function Welcome() {
   const version = chrome.runtime.getManifest().version;
   const [data, setData] = useState({
     currency: null,
-    hourlyRate: null,
+    hourlyWage: null,
     hoursPerDay: null,
     daysPerWeek: null,
   });
   const [rates, setRates] = useState({});
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(3);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
@@ -33,21 +35,31 @@ export default function Welcome() {
     });
   }, []);
 
-  function handlePageChange(page) {
-    setPage(page);
+  function handlePageChange() {
+    setPage(page + 1);
   }
 
   return (
     <Container>
       <MainContainer>
         <AnimatePresence mode="wait">
-          {page === 0 ? (
+          {page == 0 ? (
             <motion.div
               key="page0"
-              initial={{ y: 100, opacity: 0 }}
+              initial={{ y: 0, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -10, opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              exit={{ y: -500, opacity: 0 }}
+              transition={{ duration: 1.2, type: "spring" }}
+              style={{ width: "100%" }}
+            >
+              <Initial handlePageChange={handlePageChange} />
+            </motion.div>
+          ) : page == 1 ? (
+            <motion.div
+              key="page1"
+              initial={{ y: 500, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1.2, type: "spring" }}
             >
               <Configurator
                 data={data}
@@ -56,25 +68,40 @@ export default function Welcome() {
                 handlePageChange={handlePageChange}
               />
             </motion.div>
-          ) : (
+          ) : page == 2 ? (
             <motion.div
-              key="page1"
-              initial={{ y: 100, opacity: 0 }}
+              key="page2"
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 1.2, type: "spring" }}
             >
-              <Display />
+              <Display
+                data={data}
+                rates={rates}
+                handlePageChange={handlePageChange}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="page3"
+              initial={{ y: 500, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 1.2, type: "spring" }}
+              style={{ width: "100%", height: "100%" }}
+            >
+              <Try />
             </motion.div>
           )}
         </AnimatePresence>
       </MainContainer>
+
       <FooterContainer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <Button type="dashed" icon={<MoonOutlined />} size="large" />
+        <Button type="dashed" icon={<MoonOutlined />} size="small" />
         <FooterText>
           THE REAL COST <FooterVersion>{version}</FooterVersion>
         </FooterText>
@@ -93,7 +120,7 @@ export default function Welcome() {
           }}
           placement="topCenter"
         >
-          <Button type="dashed" icon={<GlobalOutlined />} size="large" />
+          <Button type="dashed" icon={<GlobalOutlined />} size="small" />
         </Dropdown>
       </FooterContainer>
     </Container>
