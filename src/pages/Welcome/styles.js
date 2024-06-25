@@ -110,7 +110,7 @@ export const BlurredOverlay = styled(motion.div)`
   width: 100%;
   height: 100%;
   backdrop-filter: blur(10px);
-  z-index: 1;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -133,6 +133,7 @@ export const TryContainer = styled(motion.div)`
   align-items: center;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
 `;
 
 export const BrowserContainer = styled.div`
@@ -224,7 +225,16 @@ export const Underline = styled(motion.div)`
 
 export const ExtensionTip = styled(motion.div)`
   position: absolute;
+  width: max-content;
+  display: flex;
+  align-items: center;
+`;
+
+export const TipText = styled.p`
+  display: inline-block;
+  margin: 8px;
   font-size: 14px;
   font-weight: 300;
   color: #7e7e7e;
+  max-width: 300px;
 `;

@@ -4,8 +4,8 @@ import Hover from "../components/Hover";
 import { highlightClass } from "../constants.js";
 
 // Inject Hover component
-export default function injectHoverComponent(settings, url) {
-  console.log("%c Injecting Hover component...", "color: blue");
+export default function injectHoverComponent(settings, url, demo = false) {
+  console.log("%c Injecting Hover component...", "color: purple");
   const reactRootEl = document.createElement("div");
   reactRootEl.setAttribute("id", "therealcost-reactRoot");
   reactRootEl.style.position = "absolute";
@@ -20,6 +20,7 @@ export default function injectHoverComponent(settings, url) {
         data={data}
         settings={settings}
         siteReplaceBlacklisted={settings.replace_blacklist.includes(url)}
+        isDemo={demo}
       />
     );
   };

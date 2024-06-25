@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "righteousregular";
   src: url("chrome-extension://__MSG_@@extension_id__/righteous-regular-webfont.woff2")
       format("woff2"),
@@ -16,7 +16,7 @@
       format("woff");
   font-weight: normal;
   font-style: normal;
-}
+} */
 
 @font-face {
   font-family: "interregular";
@@ -28,7 +28,7 @@
   font-style: normal;
 }
 
-@font-face {
+/* @font-face {
   font-family: "interextra_bold";
   src: url("chrome-extension://__MSG_@@extension_id__/inter-extrabold-webfont.woff2")
       format("woff2"),
@@ -36,7 +36,7 @@
       format("woff");
   font-weight: normal;
   font-style: normal;
-}
+} */
 
 @font-face {
   font-family: "interbold";
@@ -48,7 +48,7 @@
   font-style: normal;
 }
 
-@font-face {
+/* @font-face {
   font-family: "interitalic";
   src: url("chrome-extension://__MSG_@@extension_id__/inter-italic-webfont.woff2")
       format("woff2"),
@@ -56,7 +56,7 @@
       format("woff");
   font-weight: normal;
   font-style: normal;
-}
+} */
 
 @font-face {
   font-family: "intermedium";

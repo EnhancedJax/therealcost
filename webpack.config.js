@@ -184,60 +184,60 @@ var options = {
         },
       ],
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-extrabold-webfont.woff",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-extrabold-webfont.woff2",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-thin-webfont.woff",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-thin-webfont.woff2",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/righteous-regular-webfont.woff2",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/righteous-regular-webfont.woff",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-extrabold-webfont.woff",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-extrabold-webfont.woff2",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-thin-webfont.woff",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-thin-webfont.woff2",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/righteous-regular-webfont.woff2",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/righteous-regular-webfont.woff",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -256,24 +256,24 @@ var options = {
         },
       ],
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-italic-webfont.woff2",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "src/assets/fonts/inter-italic-webfont.woff",
-          to: path.join(__dirname, "build"),
-          force: true,
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-italic-webfont.woff2",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: "src/assets/fonts/inter-italic-webfont.woff",
+    //       to: path.join(__dirname, "build"),
+    //       force: true,
+    //     },
+    //   ],
+    // }),
     new CopyWebpackPlugin({
       patterns: [
         {

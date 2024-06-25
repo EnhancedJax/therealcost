@@ -26,7 +26,7 @@ import {
   PsuedoBox,
 } from "./styles";
 
-const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
+const Hover = ({ data, settings, siteReplaceBlacklisted, isDemo }) => {
   const { t } = useTranslation();
   const {
     amount,
@@ -123,7 +123,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
           ) : (
             <Button
               onClick={() => {
-                setOpenCurrencySelector(true);
+                if (!isDemo) setOpenCurrencySelector(true);
               }}
               icon={<DollarOutlined />}
             />
@@ -141,11 +141,12 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
         >
           <Button
             onClick={() => {
-              chrome.runtime.sendMessage({
-                message: siteReplaceBlacklisted
-                  ? "removeFromReplaceBlacklist"
-                  : "addToReplaceBlacklist",
-              });
+              if (!isDemo)
+                chrome.runtime.sendMessage({
+                  message: siteReplaceBlacklisted
+                    ? "removeFromReplaceBlacklist"
+                    : "addToReplaceBlacklist",
+                });
             }}
             icon={<EyeOutlined />}
             type={siteReplaceBlacklisted ? "primary" : "default"}
@@ -159,7 +160,8 @@ const Hover = ({ data, settings, siteReplaceBlacklisted }) => {
         >
           <Button
             onClick={() => {
-              chrome.runtime.sendMessage({ message: "addToBlacklist" });
+              if (!isDemo)
+                chrome.runtime.sendMessage({ message: "addToBlacklist" });
             }}
             icon={<MinusCircleOutlined />}
           />

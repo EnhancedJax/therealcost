@@ -22,14 +22,13 @@ export default function Configurator({
   const [section3Complete, setSection3Complete] = useState(false);
 
   useEffect(() => {
-    console.log(data);
-    if (data.currency && data.hourlyWage) {
+    if (data?.currency && data?.hourlyWage) {
       setSection1Complete(true);
     }
-    if (data.hoursPerDay) {
+    if (data?.hoursPerDay) {
       setSection2Complete(true);
     }
-    if (data.daysPerWeek) {
+    if (data?.daysPerWeek) {
       setSection3Complete(true);
     }
   }, [data]);

@@ -9,6 +9,7 @@ import Display from "./containers/Display";
 import Initial from "./containers/Initial";
 import Try from "./containers/Try";
 import {
+  BlurredOverlay,
   Container,
   FooterContainer,
   FooterText,
@@ -19,12 +20,13 @@ import {
 export default function Welcome() {
   const version = chrome.runtime.getManifest().version;
   const [data, setData] = useState({
-    currency: null,
-    hourlyWage: null,
-    hoursPerDay: null,
-    daysPerWeek: null,
+    currency: "",
+    hourlyWage: "",
+    hoursPerDay: "",
+    daysPerWeek: "",
   });
   const [rates, setRates] = useState({});
+  const [settings, setSettings] = useState({});
   const [page, setPage] = useState(3);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export default function Welcome() {
 
     chrome.runtime.onMessage.addListener(function (message) {
       setRates(message.rates);
+      setSettings(message.settings);
     });
   }, []);
 
@@ -49,7 +52,7 @@ export default function Welcome() {
               initial={{ y: 0, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -500, opacity: 0 }}
-              transition={{ duration: 1.2, type: "spring" }}
+              transition={{ duration: 1.2, type: "spring", delay: 1 }}
               style={{ width: "100%" }}
             >
               <Initial handlePageChange={handlePageChange} />
@@ -82,18 +85,35 @@ export default function Welcome() {
               />
             </motion.div>
           ) : (
-            <motion.div
-              key="page3"
-              initial={{ y: 500, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -10, opacity: 0 }}
-              transition={{ duration: 1.2, type: "spring" }}
-              style={{ width: "100%", height: "100%" }}
-            >
-              <Try />
-            </motion.div>
+            page == 3 && (
+              <motion.div
+                key="page3"
+                initial={{ y: 500, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 1.2, type: "spring" }}
+                style={{ width: "100%", height: "100%" }}
+              >
+                <Try
+                  rates={rates}
+                  data={data}
+                  settings={settings}
+                  handlePageChange={handlePageChange}
+                />
+              </motion.div>
+            )
           )}
         </AnimatePresence>
+        {page == 4 && (
+          <BlurredOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2 }}
+          >
+            <img src="icon-128.png" width="64px" height="64px" />
+            Setup complete, enjoy the extension!
+          </BlurredOverlay>
+        )}
       </MainContainer>
 
       <FooterContainer
@@ -118,7 +138,7 @@ export default function Welcome() {
             },
             theme: "dark",
           }}
-          placement="topCenter"
+          placement="top"
         >
           <Button type="dashed" icon={<GlobalOutlined />} size="small" />
         </Dropdown>
