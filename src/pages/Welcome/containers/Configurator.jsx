@@ -12,6 +12,7 @@ const defaultValues = {
 };
 
 export default function Configurator({
+  t,
   data,
   setData,
   rates,
@@ -36,7 +37,7 @@ export default function Configurator({
   return (
     <TC variants={stagger} initial="hidden" animate="visible">
       {/* Section 1 */}
-      <TB variants={fadeIn}>If you earn</TB>
+      <TB variants={fadeIn}>{t("welcome.configurator.1")}</TB>
       <Popover
         content={
           <Select
@@ -86,12 +87,12 @@ export default function Configurator({
           {data.hourlyWage || defaultValues.hourlyWage}
         </TA>
       </Popover>
-      <TB variants={fadeIn}>per hour,</TB>
+      <TB variants={fadeIn}>{t("welcome.configurator.2")}</TB>
 
       {/* Section 2 */}
       {section1Complete && (
         <>
-          <TB variants={fadeIn}>work</TB>
+          <TB variants={fadeIn}>{t("welcome.configurator.3")}</TB>
           <Popover
             content={
               <InputNumber
@@ -114,10 +115,10 @@ export default function Configurator({
               transition={{ duration: 0.2 }}
               pending={!data.hoursPerDay}
             >
-              {(data.hoursPerDay || defaultValues.hoursPerDay) + " hours"}
+              {(data.hoursPerDay || defaultValues.hoursPerDay) + t("hours")}
             </TA>
           </Popover>
-          <TB variants={fadeIn}>a day, </TB>
+          <TB variants={fadeIn}>{t("welcome.configurator.4")}</TB>
         </>
       )}
 
@@ -146,10 +147,10 @@ export default function Configurator({
               transition={{ duration: 0.2 }}
               pending={!data.daysPerWeek}
             >
-              {(data.daysPerWeek || defaultValues.daysPerWeek) + " days"}
+              {(data.daysPerWeek || defaultValues.daysPerWeek) + t("days")}
             </TA>
           </Popover>
-          <TB variants={fadeIn}>a week...</TB>
+          <TB variants={fadeIn}>{t("welcome.configurator.5")}</TB>
         </>
       )}
       {section3Complete && (

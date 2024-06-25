@@ -3,7 +3,7 @@ import React from "react";
 import { fadeInUp2, stagger, zoomOut } from "../animations";
 import { T, TA, TB, TC } from "../styles";
 
-export default function Display({ data, rates, handlePageChange }) {
+export default function Display({ t, data, rates, handlePageChange }) {
   const calculated = ((999 * rates[data.currency]) / data.hourlyWage).toFixed(
     0
   );
@@ -18,18 +18,26 @@ export default function Display({ data, rates, handlePageChange }) {
       }}
     >
       <TC variants={zoomOut}>
-        <TB>If you earn</TB>
+        <TB>{t("welcome.configurator.1")}</TB>
         <TA>{data.currency}</TA>
         <TA>{data.hourlyWage}</TA>
-        <TB>per hour, </TB>
-        <TA>{data.hoursPerDay} hours</TA>
-        <TB>a day, </TB>
-        <TA>{data.daysPerWeek} days</TA>
-        <TB>a week...</TB>
+        <TB>{t("welcome.configurator.2")}</TB>
+        <TB>{t("welcome.configurator.3")}</TB>
+        <TA>
+          {data.hoursPerDay} {t("hours")}
+        </TA>
+        <TB>{t("welcome.configurator.4")}</TB>
+        <TA>
+          {data.daysPerWeek} {t("days")}
+        </TA>
+        <TB>{t("welcome.configurator.5")}</TB>
       </TC>
       <T variants={fadeInUp2}>
-        Your new phone isn't ${price}, it's <TA>{calculated} hours</TA> of your
-        life.
+        {t("welcome.display.1", { price })}
+        <TA>
+          {calculated} {t("hours")}
+        </TA>
+        {t("welcome.display.2")}
       </T>
     </motion.div>
   );

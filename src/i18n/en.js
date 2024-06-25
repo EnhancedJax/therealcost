@@ -109,6 +109,33 @@ const en = {
         repo: "GitHub Repository",
       },
     },
+    welcome: {
+      initial: {
+        hello: "Hello",
+        thank: "Thank you for installing TheRealCost!",
+        guide: "I'll guide you through what the extension does.",
+        setup: "Let's setup the extension first!",
+      },
+      configurator: {
+        1: "If you earn",
+        2: "per hour, ",
+        3: "work",
+        4: "a day, ",
+        5: "a week...",
+      },
+      display: {
+        1: "Your new phone isn't {{price}}, it's ",
+        2: " of your life",
+      },
+      try: {
+        description:
+          "The extension will automatically convert & highlight prices to how much hours you have to work to afford them! This can be turned off in the settings.",
+        hover: "Hover me!",
+        configure:
+          "Configure your settings by clicking on the extension icon of your browser!",
+      },
+      complete: "Setup complete, enjoy the extension!",
+    },
   },
 };
 

@@ -16,7 +16,7 @@ import {
 } from "../styles";
 import SkeletonBrowser from "./SkeletonBrowser";
 
-export default function Try({ rates, data, settings, handlePageChange }) {
+export default function Try({ t, rates, data, settings, handlePageChange }) {
   const [showNewPrice, setShowNewPrice] = useState(false);
 
   const originalPrice = (999 * rates[data.currency]).toFixed(0);
@@ -106,12 +106,10 @@ export default function Try({ rates, data, settings, handlePageChange }) {
                 >
                   <img src="left.svg" width="112" height="11" />
                   <TipText>
-                    The extension will automatically convert & highlight prices
-                    to how much hours you have to work to afford them! This can
-                    be turned off in the settings.
+                    {t("welcome.try.description")}
                     <br />
                     <br />
-                    Hover me!
+                    {t("welcome.try.hover")}
                   </TipText>
                 </ExtensionTip>
               </LargePrice>
@@ -139,10 +137,7 @@ export default function Try({ rates, data, settings, handlePageChange }) {
             }}
           >
             <img src="bottomLeft.svg" width="94" height="34" />
-            <TipText>
-              Configure your settings by clicking on the extension icon of your
-              browser!
-            </TipText>
+            <TipText>{t("welcome.try.configure")}</TipText>
           </ExtensionTip>
         </SkeletonBrowser>
       </div>

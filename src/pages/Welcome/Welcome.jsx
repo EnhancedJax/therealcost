@@ -2,6 +2,8 @@ import { GlobalOutlined, MoonOutlined } from "@ant-design/icons";
 import { Button, Dropdown } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import "../../utils/i18n";
 import i18n, { languages } from "../../utils/i18n";
 import { saveOptions } from "../../utils/storage";
 import Configurator from "./containers/Configurator";
@@ -18,6 +20,7 @@ import {
 } from "./styles";
 
 export default function Welcome() {
+  const { t } = useTranslation();
   const version = chrome.runtime.getManifest().version;
   const [data, setData] = useState({
     currency: "",
@@ -27,7 +30,7 @@ export default function Welcome() {
   });
   const [rates, setRates] = useState({});
   const [settings, setSettings] = useState({});
-  const [page, setPage] = useState(3);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
@@ -55,7 +58,7 @@ export default function Welcome() {
               transition={{ duration: 1.2, type: "spring" }}
               style={{ width: "100%" }}
             >
-              <Initial handlePageChange={handlePageChange} />
+              <Initial t={t} handlePageChange={handlePageChange} />
             </motion.div>
           ) : page == 1 ? (
             <motion.div
@@ -68,6 +71,7 @@ export default function Welcome() {
                 data={data}
                 setData={setData}
                 rates={rates}
+                t={t}
                 handlePageChange={handlePageChange}
               />
             </motion.div>
@@ -79,6 +83,7 @@ export default function Welcome() {
               transition={{ duration: 1.2, type: "spring" }}
             >
               <Display
+                t={t}
                 data={data}
                 rates={rates}
                 handlePageChange={handlePageChange}
@@ -95,6 +100,7 @@ export default function Welcome() {
                 style={{ width: "100%", height: "100%" }}
               >
                 <Try
+                  t={t}
                   rates={rates}
                   data={data}
                   settings={settings}
@@ -111,7 +117,7 @@ export default function Welcome() {
             transition={{ duration: 2 }}
           >
             <img src="icon-128.png" width="64px" height="64px" />
-            Setup complete, enjoy the extension!
+            {t("welcome.complete")}
           </BlurredOverlay>
         )}
       </MainContainer>
