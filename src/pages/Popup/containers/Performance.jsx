@@ -6,11 +6,10 @@ const Performance = ({ t }) => (
   <Collapse
     size="small"
     style={{ marginBottom: "20px" }}
-    accordion
     expandIcon={({ isActive }) => <CodeOutlined rotate={isActive ? 90 : 0} />}
     items={[
       {
-        key: "4",
+        key: "1",
         label: t("settings.titles.performance"),
         children: (
           <>

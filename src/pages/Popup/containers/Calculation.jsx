@@ -6,13 +6,12 @@ const Calculation = ({ t }) => (
   <Collapse
     size="small"
     style={{ marginBottom: "20px" }}
-    accordion
     expandIcon={({ isActive }) => (
       <CalculatorOutlined rotate={isActive ? 90 : 0} />
     )}
     items={[
       {
-        key: "2",
+        key: "1",
         label: t("settings.titles.calculation"),
         children: (
           <>

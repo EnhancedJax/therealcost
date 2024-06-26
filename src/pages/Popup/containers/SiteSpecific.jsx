@@ -42,13 +42,12 @@ const SiteSpecific = ({ t, url }) => {
     <Collapse
       size="small"
       style={{ marginBottom: "20px" }}
-      accordion
       expandIcon={({ isActive }) => (
         <UnorderedListOutlined rotate={isActive ? 90 : 0} />
       )}
       items={[
         {
-          key: "3",
+          key: "1",
           label: t("settings.titles.siteSpecific"),
           children: (
             <>
