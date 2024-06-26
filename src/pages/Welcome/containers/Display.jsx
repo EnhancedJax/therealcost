@@ -33,7 +33,7 @@ export default function Display({ t, data, rates, handlePageChange }) {
         <TB>{t("welcome.configurator.5")}</TB>
       </TC>
       <T variants={fadeInUp2}>
-        {t("welcome.display.1", { price })}
+        {t("welcome.display.1", { currency: data.currency, price })}
         <TA>
           {calculated} {t("hours")}
         </TA>

@@ -1,6 +1,26 @@
 import { motion } from "framer-motion";
 import styled from "styled-components";
 
+export const lightTheme = {
+  background: "whitesmoke",
+  text: "#000",
+  footerText: "#666",
+  pendingText: "#ccc",
+  primary: "#5a92ff",
+  borderColor: "#ccc",
+  searchBarBackground: "#efeded",
+};
+
+export const darkTheme = {
+  background: "#141414",
+  text: "#fff",
+  footerText: "#999",
+  pendingText: "#666",
+  primary: "#7aa7ff",
+  borderColor: "#444",
+  searchBarBackground: "#2a2a2a",
+};
+
 export const Container = styled.div`
   display: flex;
   padding: 40px;
@@ -10,7 +30,10 @@ export const Container = styled.div`
   gap: 42px;
   width: 100%;
   height: 100%;
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
   box-sizing: border-box;
+  transition: background-color 0.3s;
 `;
 
 export const MainContainer = styled.div`
@@ -32,27 +55,27 @@ export const FooterContainer = styled(motion.div)`
 `;
 
 export const FooterText = styled.p`
-  color: #666;
+  color: ${({ theme }) => theme.footerText};
   text-align: right;
   font-family: "Kumbh Sans";
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
-  line-height: 100%; /* 20px */
+  line-height: 100%;
+`;
+
+export const T = styled(motion.p)`
+  color: ${({ theme }) => theme.text};
+  font-family: "Kumbh Sans";
+  font-style: normal;
+  font-size: 96px;
+  font-weight: 300;
+  line-height: 100%;
 `;
 
 export const FooterVersion = styled.span`
   font-weight: 300;
   font-size: 12px;
-`;
-
-export const T = styled(motion.p)`
-  color: #000;
-  font-family: "Kumbh Sans";
-  font-style: normal;
-  font-size: 96px;
-  font-weight: 300;
-  line-height: 100%; /* 96px */
 `;
 
 export const TC = styled(motion.p)`
@@ -64,7 +87,7 @@ export const TC = styled(motion.p)`
   width: 100%;
   font-size: 96px;
   gap: 20px 40px;
-  color: #000;
+  color: ${({ theme }) => theme.text};
   font-family: "Kumbh Sans";
   font-style: normal;
   font-weight: 300;
@@ -75,11 +98,12 @@ export const TB = styled(motion.span)`
 `;
 
 export const TA = styled(motion.span)`
-  color: ${(props) => (props.pending ? "#ccc" : "#000")};
+  color: ${(props) =>
+    props.pending === "1" ? props.theme.pendingText : props.theme.text};
   font-family: "Kumbh Sans";
   font-style: normal;
   font-weight: ${(props) => (props.small ? "400" : "800")};
-  line-height: 100%; /* 96px */
+  line-height: 100%;
   border-bottom: 4px solid;
   cursor: pointer;
 `;
@@ -88,17 +112,17 @@ export const Arrow = styled(motion.span)`
   width: 100px;
   height: 96px;
   flex-shrink: 0;
-  color: #5a92ff;
+  color: ${({ theme }) => theme.primary};
   font-family: "Kumbh Sans";
   font-size: 96px;
   font-style: normal;
   font-weight: 800;
-  line-height: 80%; /* 76.8px */
+  line-height: 80%;
   cursor: pointer;
   border-radius: 12px;
   transition: all 0.3s;
   &:hover {
-    background-color: rgba(90, 146, 255, 0.1);
+    background-color: ${({ theme }) => `${theme.primary}1A`};
     scale: 1.1;
   }
 `;
@@ -113,6 +137,7 @@ export const BlurredOverlay = styled(motion.div)`
   z-index: 1000;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   gap: 20px;
 `;
@@ -137,9 +162,9 @@ export const TryContainer = styled(motion.div)`
 `;
 
 export const BrowserContainer = styled.div`
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.borderColor};
   border-radius: 8px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.background};
   height: 100%;
   position: relative;
 `;
@@ -168,13 +193,13 @@ export const BrowserRow = styled.div`
   padding: 0 16px;
   font-size: 12px;
   gap: 8px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid ${({ theme }) => theme.borderColor};
 `;
 
 export const SearchBar = styled.div`
   margin: 8px 60px 8px 8px;
   padding: 4px 10px;
-  background-color: #efeded;
+  background-color: ${({ theme }) => theme.searchBarBackground};
   border-radius: 1000px;
   width: 100%;
 `;
@@ -192,7 +217,7 @@ export const BrowserViewContainer = styled.div`
 export const LargePrice = styled.div`
   font-size: 48px;
   font-weight: 600;
-  color: #000;
+  color: ${({ theme }) => theme.text};
   position: relative;
 `;
 
@@ -220,7 +245,7 @@ export const Underline = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 4px;
-  background-color: black;
+  background-color: ${({ theme }) => theme.text};
 `;
 
 export const ExtensionTip = styled(motion.div)`
@@ -235,6 +260,6 @@ export const TipText = styled.p`
   margin: 8px;
   font-size: 14px;
   font-weight: 300;
-  color: #7e7e7e;
+  color: ${({ theme }) => theme.footerText};
   max-width: 300px;
 `;

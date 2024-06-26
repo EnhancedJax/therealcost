@@ -43,7 +43,20 @@ export default function Try({ t, rates, data, settings, handlePageChange }) {
       >
         <SkeletonBrowser>
           <BrowserViewContainer>
-            <img src="phone.png" width="252px" height="313px" />
+            <div
+              style={{
+                width: "252px",
+                height: "313px",
+                padding: "20px",
+              }}
+            >
+              <img
+                src="phone.png"
+                style={{ objectFit: "contain" }}
+                width="100%"
+                height="100%"
+              />
+            </div>
             <div style={{ width: "100%" }}>
               <Space>
                 <Skeleton.Avatar />
@@ -85,7 +98,7 @@ export default function Try({ t, rates, data, settings, handlePageChange }) {
                         setTimeout(handlePageChange, 8000);
                       }}
                     >
-                      {data_calculated} Hours
+                      {data_calculated} {t("cHours")}
                     </motion.p>
                   )}
                 </AnimatePresence>
@@ -109,7 +122,7 @@ export default function Try({ t, rates, data, settings, handlePageChange }) {
                     {t("welcome.try.description")}
                     <br />
                     <br />
-                    {t("welcome.try.hover")}
+                    <b>{t("welcome.try.hover")}</b>
                   </TipText>
                 </ExtensionTip>
               </LargePrice>

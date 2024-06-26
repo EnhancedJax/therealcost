@@ -56,7 +56,8 @@ export default function Configurator({
         <TA
           variants={fadeIn}
           transition={{ duration: 0.2 }}
-          pending={!data.currency}
+          whileHover={{ scale: [null, 1.15, 1.1] }}
+          pending={!data.currency ? "1" : "0"}
         >
           {data.currency || defaultValues.currency}
         </TA>
@@ -80,9 +81,9 @@ export default function Configurator({
       >
         <TA
           variants={fadeIn}
-          // whileHover={{ scale: [null, 1.15, 1.1] }}
+          whileHover={{ scale: [null, 1.15, 1.1] }}
           transition={{ duration: 0.2 }}
-          pending={!data.hourlyWage}
+          pending={!data.hourlyWage ? "1" : "0"}
         >
           {data.hourlyWage || defaultValues.hourlyWage}
         </TA>
@@ -111,9 +112,9 @@ export default function Configurator({
           >
             <TA
               variants={fadeIn}
-              // whileHover={{ scale: [null, 1.15, 1.1] }}
+              whileHover={{ scale: [null, 1.15, 1.1] }}
               transition={{ duration: 0.2 }}
-              pending={!data.hoursPerDay}
+              pending={!data.hoursPerDay ? "1" : "0"}
             >
               {(data.hoursPerDay || defaultValues.hoursPerDay) +
                 " " +
@@ -145,9 +146,9 @@ export default function Configurator({
           >
             <TA
               variants={fadeIn}
-              // whileHover={{ scale: [null, 1.15, 1.1] }}
+              whileHover={{ scale: [null, 1.15, 1.1] }}
               transition={{ duration: 0.2 }}
-              pending={!data.daysPerWeek}
+              pending={!data.daysPerWeek ? "1" : "0"}
             >
               {(data.daysPerWeek || defaultValues.daysPerWeek) +
                 " " +

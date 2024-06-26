@@ -2,7 +2,7 @@ import { restoreOptions } from "../../utils/storage";
 
 function getCurrentTab(callback) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    var currentTab = tabs[0];
+    let currentTab = tabs[0];
     callback(currentTab);
   });
 }
@@ -53,7 +53,7 @@ async function reload() {
 
 async function writeList(key, add = true) {
   getCurrentTab(function (currentTab) {
-    var rawUrl = currentTab.url;
+    let rawUrl = currentTab.url;
     if (!rawUrl) {
       console.error("No URL found");
       return;
@@ -88,12 +88,13 @@ async function writeList(key, add = true) {
 /* ---------------------------------- */
 
 chrome.runtime.onMessage.addListener((request) => {
+  console.log("Background received message:", request);
   switch (request.message) {
     /* ---------------- - --------------- */
     case "getNecessaryInfo":
       getCurrentTab(function (currentTab) {
         restoreOptions().then(async (storage) => {
-          var rates = storage.rates.data;
+          let rates = storage.rates.data;
           if (
             !storage?.rates?.lastFetched ||
             storage?.rates?.lastFetched < Date.now() - 604800000 ||
@@ -110,6 +111,7 @@ chrome.runtime.onMessage.addListener((request) => {
               chrome.storage.sync.set({
                 rates: { data: ratesData, lastFetched: Date.now() },
               });
+              rates = ratesData;
             } catch (error) {
               console.error("Error fetching exchange rate:", error);
             }
@@ -146,7 +148,7 @@ chrome.runtime.onMessage.addListener((request) => {
     case "changeCurrency":
       console.log("changeCurrency ran");
       getCurrentTab(function (currentTab) {
-        var rawUrl = currentTab.url;
+        let rawUrl = currentTab.url;
         if (!rawUrl) {
           console.error("No URL found");
           return;

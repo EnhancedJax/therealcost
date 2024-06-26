@@ -124,7 +124,7 @@ const en = {
         5: "a week...",
       },
       display: {
-        1: "Your new phone isn't {{price}}, it's ",
+        1: "Your new phone isn't {{currency}}{{price}}, it's ",
         2: " of your life",
       },
       try: {
@@ -134,7 +134,8 @@ const en = {
         configure:
           "Configure your settings by clicking on the extension icon of your browser!",
       },
-      complete: "Setup complete, enjoy the extension!",
+      complete: "Setup complete, enjoy knowing TheRealCost!",
+      close: "Leave setup",
     },
   },
 };

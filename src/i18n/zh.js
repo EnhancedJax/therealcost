@@ -106,6 +106,33 @@ const zh = {
         repo: "Github 倉庫",
       },
     },
+    welcome: {
+      initial: {
+        hello: "你好",
+        thank: "感謝您安裝TheRealCost!",
+        guide: "我將為您介紹這擴展程式的功能。",
+        setup: "讓我們先開始設置！",
+      },
+      configurator: {
+        1: "如果您每小時賺",
+        2: ",",
+        3: "每天工作",
+        4: ",每週工作",
+        5: "...",
+      },
+      display: {
+        1: "一部新手機不是 {{currency}}{{price}}，而是你生命中的 ",
+        2: "。",
+      },
+      try: {
+        description:
+          "這個擴展程式會自動轉換並突出顯示價格，以小時為單位計算您需要工作多久才能負擔得起！這個功能可以在設置中關閉。",
+        hover: "將滑鼠懸停在我上面！",
+        configure: "點擊瀏覽器中的擴展程式圖標來更改您的設定！",
+      },
+      complete: "設置完成, 現在您可以開始使用TheRealCost了!",
+      close: "關閉",
+    },
   },
 };
 
