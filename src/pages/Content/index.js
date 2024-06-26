@@ -90,10 +90,23 @@ function setConversionRate(url) {
   }
 }
 
-function calculate(numStr) {
-  const num = parseFloat(
-    numStr.replace(/,/g, numStr.length - 3 !== numStr.indexOf(",") ? "" : ",")
+function calculate(match) {
+  const fullMatch = match[0];
+  const currency = match[1];
+  const amount = match[2];
+  const unit = match[3];
+
+  let num = parseFloat(
+    amount.replace(/,/g, amount.length - 3 !== amount.indexOf(",") ? "" : ",")
   );
+
+  if (unit) {
+    if (unit === "m" || unit === "M" || unit.trim() === "Million") {
+      num = num * 1000000;
+    } else if (unit === "k" || unit === "K" || unit.trim() === "Thousand") {
+      num = num * 1000;
+    }
+  }
   var toRej = false;
   if (num < settings.minAmount) {
     toRej = true;
@@ -104,7 +117,7 @@ function calculate(numStr) {
     (calculated < 10 ? calculated : calculated.split(".")[0]) +
     " " +
     i18n.t("hours");
-  return [calculated, string, toRej];
+  return [fullMatch, currency, amount, unit, calculated, string, toRej];
 }
 
 // Function to detect and highlight money amounts
@@ -120,18 +133,19 @@ function highlightMoneyAmounts() {
   };
 
   const createSpans = (node, matches, startIndex) => {
-    const createSpan = (node, fullMatch, currency, amount) => {
+    const createSpan = (node, match) => {
       const parent = node.parentNode;
       const textContent = node.textContent;
 
-      const [calculated, string, toRej] = calculate(amount);
+      const [fullMatch, currency, amount, unit, calculated, string, toRej] =
+        calculate(match);
 
       const span = document.createElement("span");
       span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
       span.className = toRej ? highlightClassHidden : highlightClass;
       span.dataset.currency = currency;
       span.dataset.siteCurrency = foundSiteCurrency;
-      span.dataset.amount = amount;
+      span.dataset.amount = amount + unit;
       span.dataset.calculated = calculated;
       if (!toRej) {
         Object.assign(span.style, spanStyle);
@@ -159,7 +173,7 @@ function highlightMoneyAmounts() {
         // If there are still matches left
         if (textContent.includes(match[2])) {
           // If the textContent contains the amount
-          index += createSpan(node, match[0], match[1], match[2]);
+          index += createSpan(node, match);
         } else {
           if (textContent.includes(match[1])) {
             // If the textContent contains the currency
@@ -177,15 +191,16 @@ function highlightMoneyAmounts() {
     return index;
   };
 
-  const editSpan = (span, nodeText, fullMatch, currency, amount) => {
-    const [calculated, string, toRej] = calculate(amount);
-    console.log(fullMatch, nodeText);
+  const editSpan = (span, nodeText, match) => {
+    const [fullMatch, currency, amount, unit, calculated, string, toRej] =
+      calculate(match);
+
     if (nodeText === fullMatch) {
       console.log("Node is match");
       span.textContent = replace || !toRej ? string : fullMatch;
     } else {
       console.log("Node in match");
-      if (amount.startsWith(nodeText)) {
+      if (amount.startsWith(nodeText) || nodeText.startsWith(amount)) {
         // If node text is where amount starts
         span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
       } else {
@@ -207,7 +222,7 @@ function highlightMoneyAmounts() {
     span.classList.add(toRej ? highlightClassHidden : highlightClass);
     span.dataset.currency = currency;
     span.dataset.siteCurrency = foundSiteCurrency;
-    span.dataset.amount = amount;
+    span.dataset.amount = amount + unit;
     span.dataset.calculated = calculated;
     if (!toRej) {
       Object.assign(span.style, spanStyle);
@@ -240,13 +255,7 @@ function highlightMoneyAmounts() {
         if (match[0].includes(nodeTextContent)) {
           // Case: Inline block is part / full match of current match
           const span = node.parentNode;
-          lastMatchIndex += editSpan(
-            span,
-            nodeTextContent,
-            match[0],
-            match[1],
-            match[2]
-          );
+          lastMatchIndex += editSpan(span, nodeTextContent, match);
         } else if (nodeTextContent.includes(match[0])) {
           // Case: Inline block contains match
           lastMatchIndex += createSpans(node, matches, lastMatchIndex);
