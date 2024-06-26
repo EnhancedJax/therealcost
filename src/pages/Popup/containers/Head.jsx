@@ -1,5 +1,4 @@
-import { SaveOutlined } from "@ant-design/icons";
-import { Button, Flex, Form } from "antd";
+import { Flex } from "antd";
 import React from "react";
 import { ContextHeader, Header } from "../styles";
 
@@ -13,15 +12,6 @@ const Head = ({ t }) => {
           {t("theRealCost")} <ContextHeader>v{version}</ContextHeader>
         </Header>
       </Flex>
-      <Form.Item style={{ marginBottom: "0px" }}>
-        <Button
-          type="primary"
-          htmlType="submit"
-          icon={<SaveOutlined />}
-          shape="circle"
-          size="large"
-        />
-      </Form.Item>
     </Flex>
   );
 };

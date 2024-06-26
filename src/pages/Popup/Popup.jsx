@@ -1,4 +1,5 @@
-import { Divider, Form } from "antd";
+import { SaveOutlined } from "@ant-design/icons";
+import { Divider, FloatButton, Form } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { restoreOptions, saveOptions } from "../../utils/storage";
@@ -55,6 +56,18 @@ const Popup = () => {
         <Performance t={t} />
         <Divider />
         <Foot t={t} />
+
+        <Form.Item style={{ marginBottom: "0px" }}>
+          <FloatButton
+            type="primary"
+            style={{ right: 24, bottom: 24 }}
+            onClick={() => form.submit()}
+            icon={<SaveOutlined />}
+            shape="circle"
+            size="large"
+            tooltip={t("settings.save")}
+          />
+        </Form.Item>
       </Form>
     </Container>
   );
