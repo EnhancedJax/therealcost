@@ -1,4 +1,4 @@
-import { moneyRegex, stopWhenMatch } from "./constants";
+import { priceRegex, stopWhenMatch } from "./constants";
 import { matchTextOnPage } from "./utils/matchTextOnPage";
 /**
  * @jest-environment jsdom
@@ -11,7 +11,7 @@ const testMatch = (html, expectedArray) => {
 
     matchTextOnPage(
       document.body,
-      moneyRegex,
+      priceRegex,
       stopWhenMatch,
       (currentBatch, matches) => {
         const matchData = matches;

@@ -65,6 +65,7 @@ export default function Welcome() {
               key="page1"
               initial={{ y: 500, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
+              exit={false}
               transition={{ duration: 1.2, type: "spring" }}
             >
               <Configurator
@@ -78,6 +79,7 @@ export default function Welcome() {
           ) : page == 2 ? (
             <motion.div
               key="page2"
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 1.2, type: "spring" }}
@@ -112,6 +114,7 @@ export default function Welcome() {
         </AnimatePresence>
         {page == 4 && (
           <BlurredOverlay
+            key="complete"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2 }}

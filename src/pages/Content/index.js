@@ -7,22 +7,24 @@ import { inlineBlocks, matchTextOnPage } from "../../utils/matchTextOnPage.js";
 import {
   highlightClass,
   highlightClassHidden,
-  moneyRegex,
   preMatchIgnoreClasses,
+  priceRangeRegex,
+  priceRegex,
   // preMatchIgnoreClassesIncludes,
   // preMatchIgnoreClassesNegative,
   spanStyle,
   stopWhenMatch,
 } from "../../constants.js";
 
-let settings = {};
-let rates = {};
-let conversionRate = NaN;
-let foundSiteCurrency = "";
-let countNoHighlights = 0;
-let regex = moneyRegex;
-let matchIgnoreSelector = "";
-let replace = true;
+var settings = {};
+var rates = {};
+var conversionRate = NaN;
+var regex = priceRegex;
+var rangedRegex = priceRangeRegex;
+var countNoHighlights = 0;
+var foundSiteCurrency = "";
+var matchIgnoreSelector = "";
+var replace = true;
 
 /* -------- Section Functions ------- */
 
@@ -62,7 +64,12 @@ function getThisSiteReplace(url) {
 function setConversionRate(url) {
   function injectRegex(currency) {
     regex = new RegExp(
-      moneyRegex.source
+      priceRegex.source
+        .replace("XY", currency.slice(0, 2))
+        .replace("XYZ", currency)
+    );
+    rangedRegex = new RegExp(
+      priceRangeRegex.source
         .replace("XY", currency.slice(0, 2))
         .replace("XYZ", currency)
     );
@@ -143,7 +150,7 @@ function highlightMoneyAmounts() {
       return 1;
     };
 
-    var index = startIndex;
+    let index = startIndex;
 
     while (true) {
       const match = matches[index];
@@ -172,6 +179,7 @@ function highlightMoneyAmounts() {
 
   const editSpan = (span, nodeText, fullMatch, currency, amount) => {
     const [calculated, string, toRej] = calculate(amount);
+    console.log(fullMatch, nodeText);
     if (nodeText === fullMatch) {
       console.log("Node is match");
       span.textContent = replace || !toRej ? string : fullMatch;
@@ -209,22 +217,19 @@ function highlightMoneyAmounts() {
   };
 
   const matchCallback = (currentBatch, matches, combinedText) => {
-    // console.log("%cHighlighting node...", "color: green");
-    // console.log(
-    //   "currentBatch.data:",
-    //   currentBatch.map((node) => node.data)
-    // );
-    // console.log("matches:", matches);
+    console.log("%cHighlighting node...", "color: green");
+    console.log(
+      "currentBatch.data:",
+      currentBatch.map((node) => node.data)
+    );
+    console.log("matches:", matches);
 
     let lastMatchIndex = 0;
+
     currentBatch.forEach((node) => {
-      const nodeText = node.data;
       const nodeTextContent = node.textContent.trim();
       const parent = node.parentNode;
-      if (!parent) {
-        return;
-      }
-      if (matches.length <= lastMatchIndex) {
+      if (!parent || matches.length <= lastMatchIndex) {
         return;
       }
       if (!inlineBlocks.includes(parent.nodeName)) {
@@ -242,9 +247,11 @@ function highlightMoneyAmounts() {
             match[1],
             match[2]
           );
-        } else {
+        } else if (nodeTextContent.includes(match[0])) {
           // Case: Inline block contains match
           lastMatchIndex += createSpans(node, matches, lastMatchIndex);
+        } else {
+          lastMatchIndex++;
         }
       }
     });
@@ -254,13 +261,10 @@ function highlightMoneyAmounts() {
 
   const haveMatches = matchTextOnPage(
     document.body,
-    regex,
+    [regex, rangedRegex],
     stopWhenMatch,
     matchCallback,
-    matchIgnoreSelector,
-    {
-      "-": " - ",
-    }
+    matchIgnoreSelector
   );
   countNoHighlights = haveMatches ? 0 : countNoHighlights + 1;
 

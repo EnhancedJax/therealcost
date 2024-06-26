@@ -115,7 +115,9 @@ export default function Configurator({
               transition={{ duration: 0.2 }}
               pending={!data.hoursPerDay}
             >
-              {(data.hoursPerDay || defaultValues.hoursPerDay) + t("hours")}
+              {(data.hoursPerDay || defaultValues.hoursPerDay) +
+                " " +
+                t("hours")}
             </TA>
           </Popover>
           <TB variants={fadeIn}>{t("welcome.configurator.4")}</TB>
@@ -147,7 +149,9 @@ export default function Configurator({
               transition={{ duration: 0.2 }}
               pending={!data.daysPerWeek}
             >
-              {(data.daysPerWeek || defaultValues.daysPerWeek) + t("days")}
+              {(data.daysPerWeek || defaultValues.daysPerWeek) +
+                " " +
+                t("days")}
             </TA>
           </Popover>
           <TB variants={fadeIn}>{t("welcome.configurator.5")}</TB>

@@ -17,8 +17,10 @@ export const defaultSettings = {
   rates: {},
 };
 
-export const moneyRegex =
-  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€])|\s-\s)\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
+export const priceRegex =
+  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
+export const priceRangeRegex =
+  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?\d+[.,]?\d*\s?-\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)/m;
 
 export const stopWhenMatch = /[.,]\d{1,2}\s/m;
 

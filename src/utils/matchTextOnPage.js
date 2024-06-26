@@ -15,13 +15,12 @@
 
 function matchTextOnPage(
   root = document.body,
-  regex,
+  regexList = [],
   regexStop,
   callback = () => {},
-  ignoreSelectors = "",
-  nodeReplaceMap = {}
+  ignoreSelectors = ""
 ) {
-  if (!regex) {
+  if (!regexList.length) {
     throw "No regex provided";
   }
 
@@ -72,24 +71,22 @@ function matchTextOnPage(
   }
 
   function getLastMatch(text) {
-    var m;
-    while (true) {
-      m = text.match(regex);
-      text = text.substring(m.index + 1);
-      if (!text.match(regex)) {
-        break;
-      }
-    }
-    return m;
+    const allMatches = getAllMatches(text);
+    console.log("Last match:", allMatches[allMatches.length - 1]);
+    return allMatches[allMatches.length - 1];
   }
 
   function getAllMatches(text) {
-    var matches = [];
-    var m;
-    while ((m = text.match(regex))) {
-      matches.push(m);
-      text = text.substring(m.index + m[0].length);
-    }
+    let matches = [];
+    let m;
+    let t;
+    regexList.forEach((regex) => {
+      t = text;
+      while ((m = t.match(regex))) {
+        matches.push(m);
+        t = t.substring(m.index + m[0].length);
+      }
+    });
     return matches;
   }
 
@@ -103,7 +100,7 @@ function matchTextOnPage(
     let savedMatch = [];
 
     nodes.forEach((node, index) => {
-      combinedText += nodeReplaceMap[node.data.trim()] || node.data.trim();
+      combinedText += node.data.trim();
       currentBatch.push(node);
 
       // console.log(
