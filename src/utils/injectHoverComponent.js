@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import Hover from "../components/Hover";
-import { highlightClass } from "../constants.js";
+import { highlightClass } from "../utils/constants.js";
 
 // Inject Hover component
 export default function injectHoverComponent(settings, url, demo = false) {
@@ -26,7 +26,7 @@ export default function injectHoverComponent(settings, url, demo = false) {
   };
 
   renderHover({
-    amount: 0,
+    price: 0,
     currency: null,
     siteCurrency: null,
     calculated: null,
@@ -44,7 +44,7 @@ export default function injectHoverComponent(settings, url, demo = false) {
     if (e.target.classList.contains(highlightClass)) {
       let targetRect = e.target.getBoundingClientRect();
       const data = {
-        amount: e.target.dataset.amount,
+        price: e.target.dataset.price,
         currency: e.target.dataset.currency,
         siteCurrency: e.target.dataset.siteCurrency,
         calculated: e.target.dataset.calculated,

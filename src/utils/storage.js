@@ -1,4 +1,4 @@
-import { defaultSettings } from "../constants.js";
+import { defaultSettings } from "./constants.js";
 
 async function restoreOptions(restore = defaultSettings) {
   try {

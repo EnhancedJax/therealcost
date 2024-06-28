@@ -42,11 +42,3 @@ export const preMatchIgnoreClasses = [
   "highlighted-money",
   "highlighted-money-hidden",
 ];
-
-// export const preMatchIgnoreClassesIncludes = [
-//   "hidden",
-//   "offscreen",
-//   "screen-reader",
-// ];
-
-// export const preMatchIgnoreClassesNegative = ["overflow-hidden"];

@@ -16,7 +16,7 @@ import {
 } from "antd";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ANTTHEME } from "../../constants";
+import { ANTTHEME } from "../../utils/constants";
 import SmartInfo from "../SmartInfo";
 import {
   Container,
@@ -28,7 +28,7 @@ import {
 
 const Hover = ({ data, settings, siteReplaceBlacklisted, isDemo }) => {
   const { t } = useTranslation();
-  const { amount, siteCurrency, currency, dimensions, calculated } = data;
+  const { price, siteCurrency, currency, dimensions, calculated } = data;
   const { hoursPerDay, daysPerWeek } = settings;
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
 
@@ -63,7 +63,7 @@ const Hover = ({ data, settings, siteReplaceBlacklisted, isDemo }) => {
     timeInYears,
   };
 
-  const originalStr = `${currency}${amount}`;
+  const originalStr = `${currency}${price}`;
 
   const content = (
     <ContentContainer>

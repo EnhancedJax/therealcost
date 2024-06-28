@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "styled-components";
-import { ANTTHEME } from "../../constants";
+import { ANTTHEME } from "../../utils/constants";
 import i18n, { languages } from "../../utils/i18n";
 import { saveOptions } from "../../utils/storage";
 import Configurator from "./containers/Configurator";

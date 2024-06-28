@@ -1,7 +1,7 @@
 import { Skeleton, Space } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { highlightClass } from "../../../constants";
+import { highlightClass } from "../../../utils/constants";
 import injectHoverComponent from "../../../utils/injectHoverComponent";
 import { animateTooltip } from "../animations";
 import {

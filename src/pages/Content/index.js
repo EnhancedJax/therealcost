@@ -10,11 +10,9 @@ import {
   preMatchIgnoreClasses,
   priceRangeRegex,
   priceRegex,
-  // preMatchIgnoreClassesIncludes,
-  // preMatchIgnoreClassesNegative,
   spanStyle,
   stopWhenMatch,
-} from "../../constants.js";
+} from "../../utils/constants.js";
 
 var settings = {};
 var rates = {};
@@ -29,24 +27,6 @@ var replace = true;
 /* -------- Section Functions ------- */
 
 function getMatchIgnoreSelector() {
-  // const allElements = document.querySelectorAll("*");
-  // const classNames = new Set();
-  // allElements.forEach((element) => {
-  //   element.classList.forEach((className) => {
-  //     if (
-  //       preMatchIgnoreClassesIncludes.some((ignoreClass) =>
-  //         className.includes(ignoreClass)
-  //       ) &&
-  //       !preMatchIgnoreClassesNegative.some((ignoreClass) =>
-  //         className.includes(ignoreClass)
-  //       )
-  //     ) {
-  //       classNames.add(className);
-  //     }
-  //   });
-  // });
-  // const uniqueClassNames = Array.from(classNames);
-  // const matchIgnoreClasses = preMatchIgnoreClasses.concat(uniqueClassNames);
   matchIgnoreSelector = preMatchIgnoreClasses
     .map((className) => `.${className}`)
     .join(", ");
@@ -93,11 +73,11 @@ function setConversionRate(url) {
 function calculate(match) {
   const fullMatch = match[0];
   const currency = match[1];
-  const amount = match[2];
+  const price = match[2];
   const unit = match[3];
 
   let num = parseFloat(
-    amount.replace(/,/g, amount.length - 3 !== amount.indexOf(",") ? "" : ",")
+    price.replace(/,/g, price.length - 3 !== price.indexOf(",") ? "" : ",")
   );
 
   if (unit) {
@@ -117,12 +97,12 @@ function calculate(match) {
     (calculated < 10 ? calculated : calculated.split(".")[0]) +
     " " +
     i18n.t("hours");
-  return [fullMatch, currency, amount, unit, calculated, string, toRej];
+  return [fullMatch, currency, price, unit, calculated, string, toRej];
 }
 
-// Function to detect and highlight money amounts
-function highlightMoneyAmounts() {
-  // console.log("%c Highlighting money amounts...", "color: cyan");
+// Function to detect and highlight money prices
+function highlightPrices() {
+  // console.log("%c Highlighting money prices...", "color: cyan");
 
   const splitFirst = (delimiter, string) => {
     const index = string.indexOf(delimiter);
@@ -137,7 +117,7 @@ function highlightMoneyAmounts() {
       const parent = node.parentNode;
       const textContent = node.textContent;
 
-      const [fullMatch, currency, amount, unit, calculated, string, toRej] =
+      const [fullMatch, currency, price, unit, calculated, string, toRej] =
         calculate(match);
 
       const span = document.createElement("span");
@@ -145,7 +125,7 @@ function highlightMoneyAmounts() {
       span.className = toRej ? highlightClassHidden : highlightClass;
       span.dataset.currency = currency;
       span.dataset.siteCurrency = foundSiteCurrency;
-      span.dataset.amount = amount + unit;
+      span.dataset.price = price + unit;
       span.dataset.calculated = calculated;
       if (!toRej) {
         Object.assign(span.style, spanStyle);
@@ -172,7 +152,7 @@ function highlightMoneyAmounts() {
       if (matches.length > index) {
         // If there are still matches left
         if (textContent.includes(match[2])) {
-          // If the textContent contains the amount
+          // If the textContent contains the price
           index += createSpan(node, match);
         } else {
           if (textContent.includes(match[1])) {
@@ -192,7 +172,7 @@ function highlightMoneyAmounts() {
   };
 
   const editSpan = (span, nodeText, match) => {
-    const [fullMatch, currency, amount, unit, calculated, string, toRej] =
+    const [fullMatch, currency, price, unit, calculated, string, toRej] =
       calculate(match);
 
     if (nodeText === fullMatch) {
@@ -200,14 +180,14 @@ function highlightMoneyAmounts() {
       span.textContent = replace || !toRej ? string : fullMatch;
     } else {
       console.log("Node in match");
-      if (amount.startsWith(nodeText) || nodeText.startsWith(amount)) {
-        // If node text is where amount starts
+      if (price.startsWith(nodeText) || nodeText.startsWith(price)) {
+        // If node text is where price starts
         span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
       } else {
         if (span.childElementCount > 0 && nodeText.startsWith(currency)) {
           // If node text is where currency starts
-          if (amount.includes(nodeText.replace(currency, ""))) {
-            // If node text contains amount
+          if (price.includes(nodeText.replace(currency, ""))) {
+            // If node text contains price
             !toRej
               ? (span.childNodes[0].textContent = replace ? string : "")
               : "";
@@ -222,7 +202,7 @@ function highlightMoneyAmounts() {
     span.classList.add(toRej ? highlightClassHidden : highlightClass);
     span.dataset.currency = currency;
     span.dataset.siteCurrency = foundSiteCurrency;
-    span.dataset.amount = amount + unit;
+    span.dataset.price = price + unit;
     span.dataset.calculated = calculated;
     if (!toRej) {
       Object.assign(span.style, spanStyle);
@@ -279,18 +259,14 @@ function highlightMoneyAmounts() {
 
   countNoHighlights <= 0
     ? console.log(
-        "%c Money amounts highlighted!",
+        "%c Money prices highlighted!",
         "color: gold",
         countNoHighlights
       )
-    : console.log(
-        "%c No money amounts found!",
-        "color: red",
-        countNoHighlights
-      );
+    : console.log("%c No money prices found!", "color: red", countNoHighlights);
 }
 
-// Observe the document for changes to re-highlight money amounts
+// Observe the document for changes to re-highlight money prices
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
@@ -305,11 +281,11 @@ function observeDocument() {
 
       setTimeout(() => {
         countNoHighlights = 0;
-        highlightMoneyAmounts();
+        highlightPrices();
         observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
       }, settings.performance_highlight_cooldown);
     } else {
-      highlightMoneyAmounts();
+      highlightPrices();
       observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
     }
 
@@ -343,7 +319,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     setConversionRate(url);
     injectHoverComponent(settings, url);
     setTimeout(() => {
-      highlightMoneyAmounts();
+      highlightPrices();
       observeDocument();
     }, settings.performance_load_delay);
   }
