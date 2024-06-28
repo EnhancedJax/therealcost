@@ -90,6 +90,50 @@ function matchTextOnPage(
     return matches;
   }
 
+  function indexMatches(nodes, matches, concatenatedString) {
+    const result = [];
+
+    for (let match of matches) {
+      const fullMatch = {
+        start: concatenatedString.indexOf(match[0]),
+        end: concatenatedString.indexOf(match[0]) + match[0].length,
+        value: match[0],
+      };
+
+      const groups = [];
+      for (let i = 1; i < match.length; i++) {
+        const group = match[i];
+        if (group === "") {
+          groups.push({ nodes: null, start: -1, value: "" });
+          continue;
+        }
+
+        const groupResult = { nodes: [], start: -1, value: group };
+
+        let currentIndex = 0;
+        let groupStartIndex = concatenatedString.indexOf(group);
+        for (let node of nodes) {
+          if (currentIndex + node.data.length > groupStartIndex) {
+            groupResult.nodes.push(node);
+            if (groupResult.start === -1) {
+              groupResult.start = groupStartIndex - currentIndex;
+            }
+          }
+          if (currentIndex > groupStartIndex + group.length) {
+            break;
+          }
+          currentIndex += node.data.length;
+        }
+
+        groups.push(groupResult);
+      }
+
+      result.push({ fullMatch, groups });
+    }
+
+    return result;
+  }
+
   /**
    * Checks the text across sibling nodes for matches and applies the callback function to the matched nodes.
    * @param {Array} nodes - An array of text nodes to check.
@@ -146,7 +190,7 @@ function matchTextOnPage(
             const match = savedMatch.length > 0 ? savedMatch : matches;
             // console.log("%cMatch Found", "color: gold", match);
             result = true;
-            callback(currentBatch, match, combinedText);
+            callback(indexMatches(currentBatch, match, combinedText));
           } else {
             // console.log("%cNo Match Found", "color: red");
           }

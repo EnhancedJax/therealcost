@@ -1,16 +1,14 @@
-import i18n from "../../utils/i18n.js";
 import injectHoverComponent from "../../utils/injectHoverComponent.js";
-import { inlineBlocks, matchTextOnPage } from "../../utils/matchTextOnPage.js";
+import { matchTextOnPage } from "../../utils/matchTextOnPage.js";
 
-/* ------- Section definitions ------ */
+/* ---------------------------------- */
+/*             Definitions            */
+/* ---------------------------------- */
 
 import {
-  highlightClass,
-  highlightClassHidden,
   preMatchIgnoreClasses,
   priceRangeRegex,
   priceRegex,
-  spanStyle,
   stopWhenMatch,
 } from "../../utils/constants.js";
 
@@ -24,7 +22,9 @@ var foundSiteCurrency = "";
 var matchIgnoreSelector = "";
 var replace = true;
 
-/* -------- Section Functions ------- */
+/* ---------------------------------- */
+/*            Initializers            */
+/* ---------------------------------- */
 
 function getMatchIgnoreSelector() {
   matchIgnoreSelector = preMatchIgnoreClasses
@@ -70,182 +70,30 @@ function setConversionRate(url) {
   }
 }
 
-function calculate(match) {
-  const fullMatch = match[0];
-  const currency = match[1];
-  const price = match[2];
-  const unit = match[3];
+/* ---------------------------------- */
+/*                Main                */
+/* ---------------------------------- */
 
-  let num = parseFloat(
-    price.replace(/,/g, price.length - 3 !== price.indexOf(",") ? "" : ",")
-  );
-
-  if (unit) {
-    if (unit === "m" || unit === "M" || unit.trim() === "Million") {
-      num = num * 1000000;
-    } else if (unit === "k" || unit === "K" || unit.trim() === "Thousand") {
-      num = num * 1000;
-    }
-  }
-  var toRej = false;
-  if (num < settings.minAmount) {
-    toRej = true;
-  }
-  const convertedNum = num * conversionRate;
-  let calculated = (convertedNum / settings.hourlyWage).toFixed(2);
-  const string =
-    (calculated < 10 ? calculated : calculated.split(".")[0]) +
-    " " +
-    i18n.t("hours");
-  return [fullMatch, currency, price, unit, calculated, string, toRej];
-}
-
-// Function to detect and highlight money prices
 function highlightPrices() {
-  // console.log("%c Highlighting money prices...", "color: cyan");
+  // Cases:
+  // [t$1.00kt]
+  // [t $1.00k t $2.00k t]
+  // [t$/1.00k/t]
+  // [t$1/.00k/t]
+  // [t$/1/.00k//t]
+  // [t/$//1//.00k/t]
+  // [/t/$1.00k/t/]
+  // [t$1.00k-$2.00kt]
+  // [t$1.00k/-//$2.00k/t]
+  // [t/$1.00k/-/$2.00k/t]
+  // [t/$1.00k//-//$2.00k/t]
+  // [t/$1.00k-//$2.00k/t]
+  // [t/$1.00k//-$2.00k/t]
+  // [t/$//1.00k//-//$2.00k/t]
+  // [$ 1]
 
-  const splitFirst = (delimiter, string) => {
-    const index = string.indexOf(delimiter);
-    if (index === -1) {
-      return [string]; // Return the original string if the delimiter is not found
-    }
-    return [string.slice(0, index), string.slice(index + delimiter.length)];
-  };
-
-  const createSpans = (node, matches, startIndex) => {
-    const createSpan = (node, match) => {
-      const parent = node.parentNode;
-      const textContent = node.textContent;
-
-      const [fullMatch, currency, price, unit, calculated, string, toRej] =
-        calculate(match);
-
-      const span = document.createElement("span");
-      span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
-      span.className = toRej ? highlightClassHidden : highlightClass;
-      span.dataset.currency = currency;
-      span.dataset.siteCurrency = foundSiteCurrency;
-      span.dataset.price = price + unit;
-      span.dataset.calculated = calculated;
-      if (!toRej) {
-        Object.assign(span.style, spanStyle);
-      }
-
-      const parts = splitFirst(fullMatch, textContent);
-      if (fullMatch.startsWith(" ")) {
-        parts[0] += " ";
-      }
-
-      // <div> <--- parent
-      parent.insertBefore(document.createTextNode(parts[0]), node); //   <parts[0]/> <--- 1st insert
-      parent.insertBefore(span, node); //   <span/> <--- 2nd insert
-      node.textContent = parts[1]; //   <node/> <--- sets to parts[1]
-      // </div>
-      return 1;
-    };
-
-    let index = startIndex;
-
-    while (true) {
-      const match = matches[index];
-      const textContent = node.textContent;
-      if (matches.length > index) {
-        // If there are still matches left
-        if (textContent.includes(match[2])) {
-          // If the textContent contains the price
-          index += createSpan(node, match);
-        } else {
-          if (textContent.includes(match[1])) {
-            // If the textContent contains the currency
-            const lastIndex = textContent.lastIndexOf(match[1]);
-            node.textContent =
-              textContent.slice(0, lastIndex) +
-              textContent.slice(lastIndex + match[1].length);
-          }
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-    return index;
-  };
-
-  const editSpan = (span, nodeText, match) => {
-    const [fullMatch, currency, price, unit, calculated, string, toRej] =
-      calculate(match);
-
-    if (nodeText === fullMatch) {
-      console.log("Node is match");
-      span.textContent = replace || !toRej ? string : fullMatch;
-    } else {
-      console.log("Node in match");
-      if (price.startsWith(nodeText) || nodeText.startsWith(price)) {
-        // If node text is where price starts
-        span.textContent = toRej ? fullMatch : replace ? string : fullMatch;
-      } else {
-        if (span.childElementCount > 0 && nodeText.startsWith(currency)) {
-          // If node text is where currency starts
-          if (price.includes(nodeText.replace(currency, ""))) {
-            // If node text contains price
-            !toRej
-              ? (span.childNodes[0].textContent = replace ? string : "")
-              : "";
-          } else {
-            span.childNodes[0].textContent = toRej ? currency : "";
-          }
-        } else {
-          span.textContent = "";
-        }
-      }
-    }
-    span.classList.add(toRej ? highlightClassHidden : highlightClass);
-    span.dataset.currency = currency;
-    span.dataset.siteCurrency = foundSiteCurrency;
-    span.dataset.price = price + unit;
-    span.dataset.calculated = calculated;
-    if (!toRej) {
-      Object.assign(span.style, spanStyle);
-    }
-
-    return nodeText === fullMatch ? 1 : 0;
-  };
-
-  const matchCallback = (currentBatch, matches, combinedText) => {
-    console.log("%cHighlighting node...", "color: green");
-    console.log(
-      "currentBatch.data:",
-      currentBatch.map((node) => node.data)
-    );
-    console.log("matches:", matches);
-
-    let lastMatchIndex = 0;
-
-    currentBatch.forEach((node) => {
-      const nodeTextContent = node.textContent.trim();
-      const parent = node.parentNode;
-      if (!parent || matches.length <= lastMatchIndex) {
-        return;
-      }
-      if (!inlineBlocks.includes(parent.nodeName)) {
-        // CASE: Node is direct text content of non-inline block
-        lastMatchIndex += createSpans(node, matches, lastMatchIndex);
-      } else {
-        const match = matches[lastMatchIndex];
-        if (match[0].includes(nodeTextContent)) {
-          // Case: Inline block is part / full match of current match
-          const span = node.parentNode;
-          lastMatchIndex += editSpan(span, nodeTextContent, match);
-        } else if (nodeTextContent.includes(match[0])) {
-          // Case: Inline block contains match
-          lastMatchIndex += createSpans(node, matches, lastMatchIndex);
-        } else {
-          lastMatchIndex++;
-        }
-      }
-    });
-
-    // console.log("Node highlighted!");
+  const matchCallback = (indexedMatch) => {
+    console.log("Match:", indexedMatch);
   };
 
   const haveMatches = matchTextOnPage(
@@ -266,7 +114,10 @@ function highlightPrices() {
     : console.log("%c No money prices found!", "color: red", countNoHighlights);
 }
 
-// Observe the document for changes to re-highlight money prices
+/* ---------------------------------- */
+/*              Observer              */
+/* ---------------------------------- */
+
 function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
@@ -298,7 +149,9 @@ function observeDocument() {
   });
 }
 
-/* -------- Section Initialization ------- */
+/* ---------------------------------- */
+/*           Initialization           */
+/* ---------------------------------- */
 
 chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
 
