@@ -38,7 +38,6 @@ function getMatchIgnoreSelector() {
 
 function getThisSiteReplace(url) {
   if (settings.replace_blacklist.includes(url)) {
-    console.log("Blacklisted site for replace:", url);
     V_replace = false;
   } else {
     V_replace = !settings.noReplace;
@@ -79,23 +78,6 @@ function setConversionRate(url) {
 /* ---------------------------------- */
 
 function highlightPrices() {
-  // Cases:
-  // [t$1.00kt]
-  // [t $1.00k t $2.00k t]
-  // [t$/1.00k/t]
-  // [t$1/.00k/t]
-  // [t$/1/.00k//t]
-  // [t/$//1//.00k/t]
-  // [/t/$1.00k/t/]
-  // [t$1.00k-$2.00kt]
-  // [t$1.00k/-//$2.00k/t]
-  // [t/$1.00k/-/$2.00k/t]
-  // [t/$1.00k//-//$2.00k/t]
-  // [t/$1.00k-//$2.00k/t]
-  // [t/$1.00k//-$2.00k/t]
-  // [t/$//1.00k//-//$2.00k/t]
-  // [$ 1]
-
   const calulate = (match) => {
     const fullMatch = match.value;
     const currency = match.groups[0].value;
@@ -131,22 +113,7 @@ function highlightPrices() {
     };
   };
 
-  // const [fullMatch, currency, price, unit, calculated, string, toRej] =
-  // calculate(match);
-
-  // const span = document.createElement("span");
-  // span.textContent = toRej ? fullMatch : V_replace ? string : fullMatch;
-  // span.className = toRej ? highlightClassHidden : highlightClass;
-  // span.dataset.currency = currency;
-  // span.dataset.siteCurrency = V_foundSiteCurrency;
-  // span.dataset.price = price + unit;
-  // span.dataset.calculated = calculated;
-  // if (!toRej) {
-  //   Object.assign(span.style, spanStyle);
-  // }
-
   const matchCallback = (indexedMatch) => {
-    console.log(indexedMatch);
     let offset = 0;
     let lastNode = null;
     let lastNodeData = null;
@@ -161,7 +128,7 @@ function highlightPrices() {
 
       for (let i = 0; i < 3; i++) {
         const { full, nodes, start, end, value } = groups[i];
-
+        /* ----------- createSpan ----------- */
         const createSpan = (data) => {
           const span = document.createElement("span");
           span.textContent = (() => {
@@ -178,6 +145,7 @@ function highlightPrices() {
           if (!toRej) Object.assign(span.style, spanStyle);
           return span;
         };
+        /* ---------------- - --------------- */
         if (nodes === null) continue;
         if (full) {
           nodes.forEach((node) => {
@@ -185,7 +153,6 @@ function highlightPrices() {
             node.replaceWith(span);
           });
         } else {
-          // assume one node
           if (start < 0) continue;
           let node = nodes[0];
 
@@ -199,7 +166,6 @@ function highlightPrices() {
           const span = createSpan(
             node.data.substring(start + offset, end + offset)
           );
-          console.log(groups[i], offset);
           const startNode = document.createTextNode(
             node.textContent.substring(0, start + offset)
           );
@@ -223,18 +189,6 @@ function highlightPrices() {
     V_matchIgnoreSelector
   );
   V_countNoHighlights = haveMatches ? 0 : V_countNoHighlights + 1;
-
-  V_countNoHighlights <= 0
-    ? console.log(
-        "%c Money prices highlighted!",
-        "color: gold",
-        V_countNoHighlights
-      )
-    : console.log(
-        "%c No money prices found!",
-        "color: red",
-        V_countNoHighlights
-      );
 }
 
 /* ---------------------------------- */
@@ -245,14 +199,9 @@ function observeDocument() {
   const observer = new MutationObserver((mutations) => {
     observer.disconnect(); // Pause observing
 
-    if (V_countNoHighlights >= settings.performance_stop_threshold) {
-      console.log("%c Too many empty highlights, stopping...", "color: red");
-      return;
-    }
+    if (V_countNoHighlights >= settings.performance_stop_threshold) return;
 
     if (V_countNoHighlights >= settings.performance_max_empty_highlights) {
-      console.log("%c Too many empty highlights, buffering...", "color: red");
-
       setTimeout(() => {
         V_countNoHighlights = 0;
         highlightPrices();
@@ -262,8 +211,6 @@ function observeDocument() {
       highlightPrices();
       observer.observe(document.body, { childList: true, subtree: true }); // Resume observing
     }
-
-    console.log("%c Document changed!", "color: green");
   });
 
   observer.observe(document.body, {
@@ -286,7 +233,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     Object.assign(settings, message.settings);
     Object.assign(rates, message.rates);
     if (settings.blacklist.includes(url)) {
-      console.log("Blacklisted site:", url);
       return;
     }
 

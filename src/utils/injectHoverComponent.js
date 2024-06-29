@@ -5,7 +5,6 @@ import { highlightClass } from "../utils/constants.js";
 
 // Inject Hover component
 export default function injectHoverComponent(settings, url, demo = false) {
-  console.log("%c Injecting Hover component...", "color: purple");
   const reactRootEl = document.createElement("div");
   reactRootEl.setAttribute("id", "therealcost-reactRoot");
   reactRootEl.style.position = "absolute";
@@ -60,6 +59,4 @@ export default function injectHoverComponent(settings, url, demo = false) {
       renderHover(data);
     }
   });
-
-  console.log("Hover component injected!");
 }

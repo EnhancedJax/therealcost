@@ -45,7 +45,6 @@ export default function Welcome() {
   }, []);
 
   function handlePageChange() {
-    console.log(data, rates, settings);
     setPage(page + 1);
   }
 
@@ -158,7 +157,6 @@ export default function Welcome() {
               onClick={() => {
                 const newTheme = settings?.theme === "dark" ? "light" : "dark";
                 setSettings({ ...settings, theme: newTheme });
-                console.log(settings);
                 saveOptions({ theme: newTheme });
               }}
             />

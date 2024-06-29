@@ -11,7 +11,6 @@ async function restoreOptions(restore = defaultSettings) {
         }
       });
     });
-    console.log("Options restored!", items);
     return items;
   } catch (error) {
     console.error("Error restoring options:", error);
@@ -29,7 +28,6 @@ const saveOptions = async (settings) => {
         }
       });
     });
-    console.log("Options saved!", settings);
   } catch (error) {
     console.error("Error saving options:", error);
   }

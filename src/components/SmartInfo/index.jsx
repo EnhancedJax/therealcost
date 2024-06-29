@@ -28,8 +28,6 @@ export default function SmartInfo({ values }) {
     size: 15,
   };
 
-  console.log(hours, hoursPerDay);
-
   if (hoursPerDay > hours) {
     // under a day: display day
     return (

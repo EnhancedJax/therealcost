@@ -127,14 +127,6 @@ function matchTextOnPage(
         let groupEndIndex = groupStartIndex + group.length;
         matchIndex = groupEndIndex;
         for (let node of nodes) {
-          // console.log(
-          //   currentIndex,
-          //   concatenatedString,
-          //   group,
-          //   groupStartIndex,
-          //   node.data,
-          //   node.data.length
-          // );
           if (currentIndex + node.data.length > groupStartIndex) {
             groupResult.nodes.push(node);
             if (groupResult.start === -1) {
@@ -171,11 +163,6 @@ function matchTextOnPage(
       combinedText += node.data;
       currentBatch.push(node);
 
-      // console.log(
-      //   `Node ${index}: ${node.data}, ${node.nodeName}, ${node.parentNode.nodeName}`
-      // );
-      // console.log(`Combined Text: ${combinedText}`);
-
       const stopMatch =
         savedMatch.length > 0 ? false : regexStop.test(combinedText);
       const nonSibling =
@@ -187,36 +174,23 @@ function matchTextOnPage(
         const lastMatch = getLastMatch(combinedText);
 
         if (lastMatch[0] !== savedMatch[savedMatch.length - 1][0]) {
-          // console.log(
-          //   "New match found, saving match and continuing until end of node"
-          // );
           savedMatch.push(lastMatch);
         }
         if (!nonSibling) {
-          // console.log(
-          //   "Next node is sibling (not reach end of parent), continuing..."
-          // );
           return;
         }
       }
 
       if (nonSibling || stopMatch) {
-        // console.log("Stop condition met:", nonSibling, stopMatch);
         const matches = getAllMatches(combinedText);
         if (matches.length > 0 && stopMatch && !nonSibling) {
           // note: check stopMatch only when there are matches
-          // console.log(
-          //   "Stop match found, saving match and continuing until end of node"
-          // );
           savedMatch.push(matches[0]);
         } else {
           if (savedMatch.length > 0 || matches.length > 0) {
             const match = savedMatch.length > 0 ? savedMatch : matches;
-            // console.log("%cMatch Found", "color: gold", match);
             result = true;
             callback(indexMatches(currentBatch, match, combinedText));
-          } else {
-            // console.log("%cNo Match Found", "color: red");
           }
           savedMatch = [];
           combinedText = "";
@@ -226,9 +200,7 @@ function matchTextOnPage(
     });
   }
 
-  // console.log(`Processing root node: ${root.nodeName}`);
   const textNodes = getTextNodes(root);
-  // console.log(`Found ${textNodes.length} text nodes`);
   checkTextAcrossSiblings(textNodes);
   return result;
 }

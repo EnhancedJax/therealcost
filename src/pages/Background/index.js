@@ -64,21 +64,17 @@ async function writeList(key, add = true) {
     getOption(key).then((list) => {
       if (add) {
         if (!list) {
-          console.log("Writing new list: " + url);
           writeOption(key, [url]);
         } else if (!list.includes(url)) {
-          console.log("Adding to list: " + url);
           writeOption(key, [...list, url]);
         }
       } else {
         if (list && list.includes(url)) {
-          console.log("Removing from list: " + url);
           const updatedList = list.filter((item) => item !== url);
           writeOption(key, updatedList);
         }
       }
     });
-    console.log("Final setting:", getOption(key));
     reload();
   });
 }
@@ -88,7 +84,6 @@ async function writeList(key, add = true) {
 /* ---------------------------------- */
 
 chrome.runtime.onMessage.addListener((request) => {
-  console.log("Background received message:", request);
   switch (request.message) {
     /* ---------------- - --------------- */
     case "getNecessaryInfo":
@@ -146,7 +141,6 @@ chrome.runtime.onMessage.addListener((request) => {
       break;
     /* ---------------- - --------------- */
     case "changeCurrency":
-      console.log("changeCurrency ran");
       getCurrentTab(function (currentTab) {
         let rawUrl = currentTab.url;
         if (!rawUrl) {
@@ -157,9 +151,7 @@ chrome.runtime.onMessage.addListener((request) => {
         const url = new URL(rawUrl).origin;
 
         getOption("site_currency_map").then((site_currency_map) => {
-          console.log("site_currency_map:", site_currency_map);
           if (!site_currency_map) {
-            console.log("Writing new site_currency_map: " + url);
             writeOption("site_currency_map", [
               {
                 url: url,
@@ -177,7 +169,6 @@ chrome.runtime.onMessage.addListener((request) => {
               return site;
             });
             writeOption("site_currency_map", updatedMap);
-            console.log("Updated site_currency_map:", updatedMap);
           }
         });
       });
