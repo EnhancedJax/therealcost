@@ -18,9 +18,9 @@ export const defaultSettings = {
 };
 
 export const priceRegex =
-  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)((?:\s?Million|[Mm]|\s?Thousand|[Kk])?)/m;
+  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)\s?((?:Million|Mil|[Mm]|Thousand|[Kk])?)/m;
 export const priceRangeRegex =
-  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?\d+(?:,\d{3})*(?:[.,]\d{0,2})?(?:\s?Million|[Mm]|\s?Thousand|[Kk])?\s?-\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)((?:\s?Million|[Mm]|\s?Thousand|[Kk])?)/m;
+  /(?:((?:XY|XYZ)\s?[$£¥€]?|[$£¥€]))\s?\d+(?:,\d{3})*(?:[.,]\d{0,2})?(?:Million|Mil|[Mm]|Thousand|[Kk])?\s?-\s?(\d+(?:,\d{3})*(?:[.,]\d{0,2})?)((?:Million|Mil|[Mm]|Thousand|[Kk])?)/m;
 
 export const stopWhenMatch = /[.,]\d{1,2}\s/m;
 

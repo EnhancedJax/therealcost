@@ -72,7 +72,6 @@ function matchTextOnPage(
 
   function getLastMatch(text) {
     const allMatches = getAllMatches(text);
-    console.log("Last match:", allMatches[allMatches.length - 1]);
     return allMatches[allMatches.length - 1];
   }
 
@@ -92,11 +91,12 @@ function matchTextOnPage(
 
   function indexMatches(nodes, matches, concatenatedString) {
     const result = [];
+    let matchIndex = 0;
 
     for (let match of matches) {
       const fullMatch = {
-        start: concatenatedString.indexOf(match[0]),
-        end: concatenatedString.indexOf(match[0]) + match[0].length,
+        start: concatenatedString.indexOf(match[0], matchIndex),
+        end: concatenatedString.indexOf(match[0], matchIndex) + match[0].length,
         value: match[0],
       };
 
@@ -104,23 +104,47 @@ function matchTextOnPage(
       for (let i = 1; i < match.length; i++) {
         const group = match[i];
         if (group === "") {
-          groups.push({ nodes: null, start: -1, value: "" });
+          groups.push({
+            nodes: null,
+            start: -1,
+            end: -1,
+            value: "",
+            full: false,
+          });
           continue;
         }
 
-        const groupResult = { nodes: [], start: -1, value: group };
+        const groupResult = {
+          nodes: [],
+          start: -1,
+          end: -1,
+          value: group,
+          full: false,
+        };
 
         let currentIndex = 0;
-        let groupStartIndex = concatenatedString.indexOf(group);
+        let groupStartIndex = concatenatedString.indexOf(group, matchIndex);
+        let groupEndIndex = groupStartIndex + group.length;
+        matchIndex = groupEndIndex;
         for (let node of nodes) {
+          // console.log(
+          //   currentIndex,
+          //   concatenatedString,
+          //   group,
+          //   groupStartIndex,
+          //   node.data,
+          //   node.data.length
+          // );
           if (currentIndex + node.data.length > groupStartIndex) {
             groupResult.nodes.push(node);
             if (groupResult.start === -1) {
               groupResult.start = groupStartIndex - currentIndex;
             }
-          }
-          if (currentIndex > groupStartIndex + group.length) {
-            break;
+            if (currentIndex + node.data.length >= groupEndIndex) {
+              groupResult.end = groupResult.start + group.length;
+              groupResult.full = node.data.length <= group.length;
+              break;
+            }
           }
           currentIndex += node.data.length;
         }
@@ -144,7 +168,7 @@ function matchTextOnPage(
     let savedMatch = [];
 
     nodes.forEach((node, index) => {
-      combinedText += node.data.trim();
+      combinedText += node.data;
       currentBatch.push(node);
 
       // console.log(
