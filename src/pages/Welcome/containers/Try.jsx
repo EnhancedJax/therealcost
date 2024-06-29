@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { highlightClass } from "../../../utils/constants";
 import injectHoverComponent from "../../../utils/injectHoverComponent";
 import { animateTooltip } from "../animations";
+import { useAppContext } from "../models/Welcome";
 import {
   BrowserViewContainer,
   ExtensionImg,
@@ -16,7 +17,8 @@ import {
 } from "../styles";
 import SkeletonBrowser from "./SkeletonBrowser";
 
-export default function Try({ t, rates, data, settings, handlePageChange }) {
+export default function Try() {
+  const { t, rates, data, settings, handlePageChange } = useAppContext();
   const [showNewPrice, setShowNewPrice] = useState(false);
 
   const originalPrice = (999 * rates[data.currency]).toFixed(0);
@@ -93,7 +95,7 @@ export default function Try({ t, rates, data, settings, handlePageChange }) {
                       data-currency={data_currency}
                       data-site-currency=""
                       data-calculated={data_calculated}
-                      data-amount={originalPrice}
+                      data-price={originalPrice}
                       onHoverEnd={() => {
                         setTimeout(handlePageChange, 8000);
                       }}

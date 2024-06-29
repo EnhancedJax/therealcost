@@ -8,10 +8,15 @@ export const stagger = (staggerDelay = 0.1, delay = 0) => ({
   },
 });
 
-export const fadeIn = {
+export const fadeIn = (delay = 0) => ({
   hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
+  visible: {
+    opacity: 1,
+    transition: {
+      delay: delay,
+    },
+  },
+});
 
 export const fadeInUp = {
   hidden: { y: 10, height: 0, opacity: 0 },
@@ -32,7 +37,7 @@ export const fadeInUp2 = {
     y: 0,
     height: "auto",
     opacity: 1,
-    marginTop: 50,
+    marginTop: 100,
     marginBottom: 150,
     transition: {
       duration: 0.5,
@@ -45,8 +50,20 @@ export const zoomOut = {
   hidden: { fontSize: "96px", gap: "20px 40px", width: "100%" },
   visible: {
     fontSize: "36px",
-    gap: "20px 16px",
+    gap: "20px 10px",
     width: "50%",
+    fontWeight: 300,
+    transition: {
+      duration: 0.6,
+      ease: "circInOut",
+    },
+  },
+};
+
+export const removeBold = {
+  hidden: { fontWeight: 800 },
+  visible: {
+    fontWeight: 500,
     transition: {
       duration: 0.6,
       ease: "circInOut",

@@ -2,7 +2,8 @@ import { InputNumber, Popover, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { saveOptions } from "../../../utils/storage";
 import { fadeIn, stagger } from "../animations";
-import { Arrow, TA, TB, TC } from "../styles";
+import { useAppContext } from "../models/Welcome";
+import { Arrow, ExtensionTip, TA, TB, TC, TipText } from "../styles";
 
 const defaultValues = {
   currency: "USD",
@@ -11,13 +12,9 @@ const defaultValues = {
   daysPerWeek: 5,
 };
 
-export default function Configurator({
-  t,
-  data,
-  setData,
-  rates,
-  handlePageChange,
-}) {
+export default function Configurator() {
+  const { t, data, setData, rates, handlePageChange } = useAppContext();
+
   const [section1Complete, setSection1Complete] = useState(false);
   const [section2Complete, setSection2Complete] = useState(false);
   const [section3Complete, setSection3Complete] = useState(false);
@@ -60,6 +57,20 @@ export default function Configurator({
           pending={!data.currency ? "1" : "0"}
         >
           {data.currency || defaultValues.currency}
+
+          <ExtensionTip
+            variants={fadeIn(0)}
+            initial="hidden"
+            animate="visible"
+            style={{
+              bottom: "110%",
+              right: "50%",
+              transform: "translateX(100%)",
+            }}
+          >
+            <img src="bottomLeft.svg" width="94" height="34" />
+            <TipText>{t("welcome.configurator.tip")}</TipText>
+          </ExtensionTip>
         </TA>
       </Popover>
 

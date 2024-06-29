@@ -14,18 +14,22 @@ const en = {
     theRealCostOf: "The real cost of {{1}}",
     sInfo: {
       underDay: {
+        // 50% of your 8 hour work day.
         p: "",
         s: " of your {{hoursPerDay}} hour work day.",
       },
       underMonth: {
+        // 1.5 days of your 5 day work week.
         p: "",
         s: " of your {{daysPerWeek}} day work week.",
       },
       underTimeMonth: {
+        // 1.5 days of your days of work
         p: "",
         s: " of your days of work",
       },
       longTimeScale: {
+        // 1 month of constant work without a break, or 22 days of work.
         1: "",
         2: " of constant work without a break, or ",
         3: " of days of work.",
@@ -122,10 +126,12 @@ const en = {
         3: "work",
         4: "a day, ",
         5: "a week...",
+        tip: "These values are used for calculation. Edit them to match your situation!",
       },
       display: {
-        1: "Your new phone isn't {{currency}}{{price}}, it's ",
-        2: " of your life",
+        1: "Your new phone isn't ",
+        2: ", it's ",
+        3: " of your life",
       },
       try: {
         description:

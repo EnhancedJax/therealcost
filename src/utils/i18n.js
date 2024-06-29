@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import canto from "../i18n/canto";
 import en from "../i18n/en";
 import zh from "../i18n/zh";
 
@@ -9,6 +10,7 @@ i18n
     resources: {
       en: en,
       zh: zh,
+      canto: canto,
     },
 
     fallbackLng: "en",
@@ -25,6 +27,7 @@ chrome.storage.sync.get("lang", (data) => {
 export const languages = {
   en: "English",
   zh: "中文",
+  canto: "廣東話",
 };
 
 export default i18n;

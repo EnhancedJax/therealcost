@@ -102,10 +102,11 @@ export const TA = styled(motion.span)`
     props.pending === "1" ? props.theme.pendingText : props.theme.text};
   font-family: "Kumbh Sans";
   font-style: normal;
-  font-weight: ${(props) => (props.small ? "400" : "800")};
+  font-weight: 800;
   line-height: 100%;
   border-bottom: 4px solid;
   cursor: pointer;
+  position: relative;
 `;
 
 export const Arrow = styled(motion.span)`
@@ -262,4 +263,5 @@ export const TipText = styled.p`
   font-weight: 300;
   color: ${({ theme }) => theme.footerText};
   max-width: 300px;
+  line-height: 1.3;
 `;

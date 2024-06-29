@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
 import React from "react";
 import { fadeInUp, stagger } from "../animations";
+import { useAppContext } from "../models/Welcome";
 import { InitialContainer } from "../styles";
 
-export default function Initial({ t, handlePageChange }) {
+export default function Initial() {
+  const { t, handlePageChange } = useAppContext();
+
   return (
     <InitialContainer
       variants={stagger(1.5, 1)}

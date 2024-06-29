@@ -1,16 +1,16 @@
 import { GlobalOutlined, MoonOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Dropdown, theme } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
 import { ThemeProvider } from "styled-components";
 import { ANTTHEME } from "../../utils/constants";
-import i18n, { languages } from "../../utils/i18n";
+import { languages } from "../../utils/i18n";
 import { saveOptions } from "../../utils/storage";
 import Configurator from "./containers/Configurator";
 import Display from "./containers/Display";
 import Initial from "./containers/Initial";
 import Try from "./containers/Try";
+import { useAppContext } from "./models/Welcome";
 import {
   BlurredOverlay,
   Container,
@@ -23,30 +23,7 @@ import {
 } from "./styles";
 
 export default function Welcome() {
-  const { t } = useTranslation();
-  const version = chrome.runtime.getManifest().version;
-  const [data, setData] = useState({
-    currency: "",
-    hourlyWage: "",
-    hoursPerDay: "",
-    daysPerWeek: "",
-  });
-  const [rates, setRates] = useState({});
-  const [settings, setSettings] = useState({});
-  const [page, setPage] = useState(0);
-
-  useEffect(() => {
-    chrome.runtime.sendMessage({ message: "getNecessaryInfo" });
-
-    chrome.runtime.onMessage.addListener(function (message) {
-      setRates(message.rates);
-      setSettings(message.settings);
-    });
-  }, []);
-
-  function handlePageChange() {
-    setPage(page + 1);
-  }
+  const { setSettings, settings, page, version, t, i18n } = useAppContext();
 
   return (
     <ThemeProvider theme={settings?.theme === "dark" ? darkTheme : lightTheme}>
@@ -71,7 +48,7 @@ export default function Welcome() {
                   transition={{ duration: 1.2, type: "spring" }}
                   style={{ width: "100%" }}
                 >
-                  <Initial t={t} handlePageChange={handlePageChange} />
+                  <Initial />
                 </motion.div>
               ) : page == 1 ? (
                 <motion.div
@@ -81,13 +58,7 @@ export default function Welcome() {
                   exit={false}
                   transition={{ duration: 1.2, type: "spring" }}
                 >
-                  <Configurator
-                    data={data}
-                    setData={setData}
-                    rates={rates}
-                    t={t}
-                    handlePageChange={handlePageChange}
-                  />
+                  <Configurator />
                 </motion.div>
               ) : page == 2 ? (
                 <motion.div
@@ -97,12 +68,7 @@ export default function Welcome() {
                   exit={{ y: -10, opacity: 0 }}
                   transition={{ duration: 1.2, type: "spring" }}
                 >
-                  <Display
-                    t={t}
-                    data={data}
-                    rates={rates}
-                    handlePageChange={handlePageChange}
-                  />
+                  <Display />
                 </motion.div>
               ) : (
                 page == 3 && (
@@ -114,13 +80,7 @@ export default function Welcome() {
                     transition={{ duration: 1.2, type: "spring" }}
                     style={{ width: "100%", height: "100%" }}
                   >
-                    <Try
-                      t={t}
-                      rates={rates}
-                      data={data}
-                      settings={settings}
-                      handlePageChange={handlePageChange}
-                    />
+                    <Try />
                   </motion.div>
                 )
               )}
@@ -185,7 +145,3 @@ export default function Welcome() {
     </ThemeProvider>
   );
 }
-
-// Bottom presistent selector for langauge
-// Page 1: Full screen input for currency selector
-// Page 2:
