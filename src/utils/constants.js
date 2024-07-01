@@ -8,7 +8,11 @@ export const defaultSettings = {
   minAmount: 0,
   noReplace: false,
   replace_blacklist: [],
-  blacklist: ["https://discord.com/"],
+  blacklist: [
+    "https://discord.com/",
+    "https://canva.com",
+    "https://www.notion.so",
+  ],
   performance_load_delay: 1000,
   performance_max_empty_highlights: 3,
   performance_highlight_cooldown: 3000,
