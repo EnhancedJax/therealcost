@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "The Real Cost",
-  "description": "A Chrome extension that shows the real cost of items in terms of hours worked.",
+  "description": "Converts prices on websites to hours of work needed to afford them.",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
@@ -11,12 +11,11 @@
   "icons": {
     "128": "icon-128.png"
   },
-  "version": "1.0.0",
+  "version": "1.0",
   "permissions": ["storage", "tabs", "scripting"],
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "exclude_matches": ["https://regex101.com/*", "https://github.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["contentScript.bundle.js"],
       "css": ["content.styles.css"]
     }

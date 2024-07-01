@@ -89,9 +89,10 @@ function highlightPrices() {
     );
 
     if (unit) {
-      if (unit === "m" || unit === "M" || unit.trim() === "Million") {
+      const unitStr = unit.trim().toLowerCase();
+      if (unitStr === "m" || unitStr === "mil" || unitStr === "million") {
         num = num * 1000000;
-      } else if (unit === "k" || unit === "K" || unit.trim() === "Thousand") {
+      } else if (unitStr === "k" || unitStr === "thousand") {
         num = num * 1000;
       }
     }

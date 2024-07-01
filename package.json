@@ -1,7 +1,7 @@
 {
   "name": "the-real-cost",
-  "version": "1.0.0",
-  "description": "A chrome extension which converts prices to hours worked",
+  "version": "1.0",
+  "description": "A Chrome extension that converts prices on websites to hours of work needed to afford them.",
   "license": "MIT",
   "repository": {
     "type": "git",

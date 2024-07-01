@@ -4,12 +4,12 @@
 
 > If you earn $30 an hour, your new phone isn't $999, it's 33 hours of your life.
 
-A Chrome extension that shows the real cost of items in terms of hours worked.
+A Chrome extension that converts prices on websites to hours of work needed to afford them.
 
 ## Features
 
 - Detects and converts (replace) prices on web pages to hours
-- Hover over prices to see more information, which is different depending on the amount
+- Hover over prices to further visualize the hours, which is different depending on the amount
 - Customizable currency, wage, work hours per day and more
 - Light / dark mode
 - Site-specific settings (e.g. disable replacement or extension on specific websites)
