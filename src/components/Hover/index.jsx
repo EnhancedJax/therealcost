@@ -2,7 +2,6 @@ import {
   DollarOutlined,
   EyeOutlined,
   MinusCircleOutlined,
-  ReloadOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -88,33 +87,21 @@ const Hover = ({ data, settings, siteReplaceBlacklisted, isDemo }) => {
           }
         >
           {openCurrencySelector ? (
-            <Flex gap="small">
-              {" "}
-              <Select
-                showSearch
-                placeholder={settings.currency}
-                optionFilterProp="label"
-                options={Object.keys(settings.rates.data).map((key) => ({
-                  label: key,
-                  value: key,
-                }))}
-                onSelect={(value) =>
-                  chrome.runtime.sendMessage({
-                    value: value,
-                    message: "changeCurrency",
-                  })
-                }
-              />
-              <Button
-                onClick={() => {
-                  chrome.runtime.sendMessage({
-                    value: settings.currency,
-                    message: "changeCurrency",
-                  });
-                }}
-                icon={<ReloadOutlined />}
-              />
-            </Flex>
+            <Select
+              showSearch
+              placeholder={settings.currency}
+              optionFilterProp="label"
+              options={Object.keys(settings.rates.data).map((key) => ({
+                label: key,
+                value: key,
+              }))}
+              onSelect={(value) =>
+                chrome.runtime.sendMessage({
+                  value: value,
+                  message: "changeCurrency",
+                })
+              }
+            />
           ) : (
             <Button
               onClick={() => {

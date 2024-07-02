@@ -159,15 +159,21 @@ chrome.runtime.onMessage.addListener((request) => {
               },
             ]);
           } else {
-            const updatedMap = site_currency_map.map((site) => {
-              if (site.url === url) {
-                return {
-                  url: site.url,
-                  currency: request.value,
-                };
-              }
-              return site;
-            });
+            const hasSite = site_currency_map.find((site) => site.url === url);
+            let updatedMap;
+            if (hasSite) {
+              updatedMap = site_currency_map.map((site) => {
+                if (site.url === url) {
+                  return { ...site, currency: request.value };
+                }
+                return site;
+              });
+            } else {
+              updatedMap = [
+                ...site_currency_map,
+                { url: url, currency: request.value },
+              ];
+            }
             writeOption("site_currency_map", updatedMap);
           }
         });

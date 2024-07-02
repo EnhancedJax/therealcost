@@ -59,6 +59,7 @@ function setConversionRate(url) {
   }
 
   const site_currency_map = settings.site_currency_map;
+  console.log(site_currency_map, url);
   const site = site_currency_map.find((site) => site.url === url);
   if (site) {
     const siteCurrency = site.currency;
