@@ -85,7 +85,8 @@ export default function Configurator() {
               setData({ ...data, hourlyWage: e.target.value });
             }}
             onChange={(value) => {
-              setData({ ...data, hourlyWage: value });
+              if (value > 0 && value < 99999)
+                setData({ ...data, hourlyWage: value });
             }}
           />
         }

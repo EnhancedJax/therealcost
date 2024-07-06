@@ -10,7 +10,7 @@ export const defaultSettings = {
   replace_blacklist: [],
   blacklist: [
     "https://discord.com/",
-    "https://canva.com",
+    "https://www.canva.com",
     "https://www.notion.so",
   ],
   performance_load_delay: 1000,
