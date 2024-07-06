@@ -21,11 +21,11 @@ A Chrome extension that converts prices on websites to hours of work needed to a
 
 ## Installation
 
-_Via Chrome Web Store (recommended)_
+_Via Chrome Web Store (recommended):_ [Install](https://chromewebstore.google.com/detail/the-real-cost/aigjgdabjgnoelaapnkhlemoemkfajeb)
 
 _Via Github releases:_
 
-1. Download the latest release from [here]()
+1. Download the latest release from [releases](https://github.com/EnhancedJax/therealcost/releases)
 2. Upzip the folder
 3. Go to your browser's extension page
 4. Enable developer mode

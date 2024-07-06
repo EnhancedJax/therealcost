@@ -8,7 +8,11 @@ const Head = ({ t }) => {
     <Flex justify="space-between" style={{ marginTop: "10px" }}>
       <Flex gap="small">
         <img src="icon-128.png" alt="icon" width="40" height="40" />
-        <Header>
+        <Header
+          onClick={() => {
+            window.open("https://therealcost.jaxtam.dev", "_blank");
+          }}
+        >
           {t("theRealCost")} <ContextHeader>v{version}</ContextHeader>
         </Header>
       </Flex>

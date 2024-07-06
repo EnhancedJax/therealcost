@@ -11,6 +11,7 @@ export const Header = styled.p`
   margin: 0;
   font-size: 24px;
   font-weight: 800;
+  cursor: pointer;
 `;
 
 export const ContextHeader = styled.span`
